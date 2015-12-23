@@ -22,6 +22,7 @@ async function copy({ watch } = {}) {
   await Promise.all([
     ncp('src/public', 'build/public'),
     ncp('src/content', 'build/content'),
+    ncp('src/markdown', 'build/markdown'),
     ncp('package.json', 'build/package.json'),
   ]);
 
@@ -40,6 +41,13 @@ async function copy({ watch } = {}) {
     watcher.on('changed', async (file) => {
       const relPath = file.substr(path.join(__dirname, '../src/content/').length);
       await ncp(`src/content/${relPath}`, `build/content/${relPath}`);
+    });
+    const mdwatcher = await new Promise((resolve, reject) => {
+      gaze('src/markdown/**/*.*', (err, val) => err ? reject(err) : resolve(val));
+    });
+    mdwatcher.on('changed', async (file) => {
+      const relPath = file.substr(path.join(__dirname, '../src/markdown/').length);
+      await ncp(`src/markdown/${relPath}`, `build/markdown/${relPath}`);
     });
   }
 }

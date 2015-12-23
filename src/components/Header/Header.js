@@ -23,7 +23,7 @@ class Header extends Component {
           <Navigation className={s.nav} />
           <a className={s.brand} href="/" onClick={Link.handleClick}>
             <img src={require('./logo-small.png')} width="38" height="38" alt="React" />
-            <span className={s.brandTxt}>Your Company</span>
+            <span className={s.brandTxt}>SiGyl</span>
           </a>
           <div className={s.banner}>
             <h1 className={s.bannerTitle}>React</h1>

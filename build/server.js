@@ -83,11 +83,11 @@ module.exports =
   
   var _routes2 = _interopRequireDefault(_routes);
   
-  var _componentsHtml = __webpack_require__(61);
+  var _componentsHtml = __webpack_require__(65);
   
   var _componentsHtml2 = _interopRequireDefault(_componentsHtml);
   
-  var _assets = __webpack_require__(62);
+  var _assets = __webpack_require__(66);
   
   var _assets2 = _interopRequireDefault(_assets);
   
@@ -103,7 +103,8 @@ module.exports =
   //
   // Register API middleware
   // -----------------------------------------------------------------------------
-  server.use('/api/content', __webpack_require__(63));
+  server.use('/api/content', __webpack_require__(67));
+  server.use('/api/markdown', __webpack_require__(72));
   
   //
   // Register server-side rendering middleware
@@ -254,23 +255,27 @@ module.exports =
   
   var _componentsContentPage2 = _interopRequireDefault(_componentsContentPage);
   
-  var _componentsContactPage = __webpack_require__(46);
+  var _componentsMarkdownPage = __webpack_require__(46);
+  
+  var _componentsMarkdownPage2 = _interopRequireDefault(_componentsMarkdownPage);
+  
+  var _componentsContactPage = __webpack_require__(50);
   
   var _componentsContactPage2 = _interopRequireDefault(_componentsContactPage);
   
-  var _componentsLoginPage = __webpack_require__(49);
+  var _componentsLoginPage = __webpack_require__(53);
   
   var _componentsLoginPage2 = _interopRequireDefault(_componentsLoginPage);
   
-  var _componentsRegisterPage = __webpack_require__(52);
+  var _componentsRegisterPage = __webpack_require__(56);
   
   var _componentsRegisterPage2 = _interopRequireDefault(_componentsRegisterPage);
   
-  var _componentsNotFoundPage = __webpack_require__(55);
+  var _componentsNotFoundPage = __webpack_require__(59);
   
   var _componentsNotFoundPage2 = _interopRequireDefault(_componentsNotFoundPage);
   
-  var _componentsErrorPage = __webpack_require__(58);
+  var _componentsErrorPage = __webpack_require__(62);
   
   var _componentsErrorPage2 = _interopRequireDefault(_componentsErrorPage);
   
@@ -331,6 +336,52 @@ module.exports =
             return context$2$0.abrupt('return', _react2['default'].createElement(_componentsRegisterPage2['default'], null));
   
           case 1:
+          case 'end':
+            return context$2$0.stop();
+        }
+      }, null, _this);
+    });
+    on('/markdown', function callee$1$0() {
+      var response, content;
+      return regeneratorRuntime.async(function callee$1$0$(context$2$0) {
+        while (1) switch (context$2$0.prev = context$2$0.next) {
+          case 0:
+            context$2$0.next = 2;
+            return regeneratorRuntime.awrap((0, _coreFetch2['default'])('/api/markdown?path='));
+  
+          case 2:
+            response = context$2$0.sent;
+            context$2$0.next = 5;
+            return regeneratorRuntime.awrap(response.json());
+  
+          case 5:
+            content = context$2$0.sent;
+            return context$2$0.abrupt('return', response && _react2['default'].createElement(_componentsMarkdownPage2['default'], content));
+  
+          case 7:
+          case 'end':
+            return context$2$0.stop();
+        }
+      }, null, _this);
+    });
+    on('/markdown/*', function callee$1$0(state) {
+      var response, content;
+      return regeneratorRuntime.async(function callee$1$0$(context$2$0) {
+        while (1) switch (context$2$0.prev = context$2$0.next) {
+          case 0:
+            context$2$0.next = 2;
+            return regeneratorRuntime.awrap((0, _coreFetch2['default'])('/api/markdown?path=' + state.path.slice(10)));
+  
+          case 2:
+            response = context$2$0.sent;
+            context$2$0.next = 5;
+            return regeneratorRuntime.awrap(response.json());
+  
+          case 5:
+            content = context$2$0.sent;
+            return context$2$0.abrupt('return', response && _react2['default'].createElement(_componentsMarkdownPage2['default'], content));
+  
+          case 7:
           case 'end':
             return context$2$0.stop();
         }
@@ -1764,7 +1815,7 @@ module.exports =
               _react2['default'].createElement(
                 'span',
                 { className: _HeaderScss2['default'].brandTxt },
-                'Your Company'
+                'SiGyl'
               )
             ),
             _react2['default'].createElement(
@@ -2778,7 +2829,206 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _ContactPageScss = __webpack_require__(47);
+  var _MarkdownPageScss = __webpack_require__(47);
+  
+  var _MarkdownPageScss2 = _interopRequireDefault(_MarkdownPageScss);
+  
+  var _decoratorsWithStyles = __webpack_require__(24);
+  
+  var _decoratorsWithStyles2 = _interopRequireDefault(_decoratorsWithStyles);
+  
+  var _reactRemarkable = __webpack_require__(49);
+  
+  var _reactRemarkable2 = _interopRequireDefault(_reactRemarkable);
+  
+  var _Link = __webpack_require__(25);
+  
+  var _Link2 = _interopRequireDefault(_Link);
+  
+  var MarkdownPage = (function (_Component) {
+    _inherits(MarkdownPage, _Component);
+  
+    function MarkdownPage() {
+      _classCallCheck(this, _MarkdownPage);
+  
+      _get(Object.getPrototypeOf(_MarkdownPage.prototype), 'constructor', this).apply(this, arguments);
+    }
+  
+    _createClass(MarkdownPage, [{
+      key: 'render',
+      value: function render() {
+        // this.context.onSetTitle(this.props.title);
+        var links = this.props.path.split('/').reduce(function (prev, current) {
+          return prev.concat([{ name: current, href: prev[prev.length - 1].href + '/' + current }]);
+        }, [{ name: 'root', href: '' }]);
+        return _react2['default'].createElement(
+          'div',
+          { className: _MarkdownPageScss2['default'].root },
+          _react2['default'].createElement(
+            'div',
+            { className: _MarkdownPageScss2['default'].container },
+            _react2['default'].createElement(
+              'h1',
+              null,
+              this.props.name
+            ),
+            _react2['default'].createElement(
+              'div',
+              null,
+              links.map(function (l) {
+                return _react2['default'].createElement(
+                  'span',
+                  null,
+                  _react2['default'].createElement(
+                    'a',
+                    { className: _MarkdownPageScss2['default'].brand, href: '/markdown' + l.href, onClick: _Link2['default'].handleClick },
+                    _react2['default'].createElement('img', { src: __webpack_require__(36), width: '38', height: '38', alt: 'React' }),
+                    _react2['default'].createElement(
+                      'span',
+                      { className: _MarkdownPageScss2['default'].brandTxt },
+                      l.name
+                    )
+                  )
+                );
+              })
+            ),
+            _react2['default'].createElement(
+              'ul',
+              null,
+              this.props.options.map(function (o) {
+                return _react2['default'].createElement(
+                  'li',
+                  { key: o.name },
+                  _react2['default'].createElement(
+                    'a',
+                    { className: _MarkdownPageScss2['default'].brand, href: '/markdown/' + o.path, onClick: _Link2['default'].handleClick },
+                    _react2['default'].createElement('img', { src: __webpack_require__(36), width: '38', height: '38', alt: 'React' }),
+                    _react2['default'].createElement(
+                      'span',
+                      { className: _MarkdownPageScss2['default'].brandTxt },
+                      o.name
+                    )
+                  )
+                );
+              })
+            ),
+            _react2['default'].createElement(_reactRemarkable2['default'], { source: this.props.content || '' })
+          )
+        );
+      }
+    }], [{
+      key: 'propTypes',
+      value: {
+        // path: PropTypes.string.isRequired,
+        content: _react.PropTypes.string.isRequired
+      },
+      enumerable: true
+    }, {
+      key: 'contextTypes',
+      // title: PropTypes.string,
+      value: {
+        onSetTitle: _react.PropTypes.func.isRequired
+      },
+      enumerable: true
+    }]);
+  
+    var _MarkdownPage = MarkdownPage;
+    MarkdownPage = (0, _decoratorsWithStyles2['default'])(_MarkdownPageScss2['default'])(MarkdownPage) || MarkdownPage;
+    return MarkdownPage;
+  })(_react.Component);
+  
+  exports['default'] = MarkdownPage;
+  module.exports = exports['default'];
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+  
+      var content = __webpack_require__(48);
+      var insertCss = __webpack_require__(20);
+  
+      if (typeof content === 'string') {
+        content = [[module.id, content, '']];
+      }
+  
+      module.exports = content.locals || {};
+      module.exports._getCss = function() { return content.toString(); };
+      module.exports._insertCss = insertCss.bind(null, content);
+    
+      var removeCss = function() {};
+  
+      // Hot Module Replacement
+      // https://webpack.github.io/docs/hot-module-replacement
+      if (false) {
+        module.hot.accept("!!./../../../node_modules/css-loader/index.js?sourceMap&modules&localIdentName=[name]_[local]_[hash:base64:3]!./../../../node_modules/postcss-loader/index.js!./MarkdownPage.scss", function() {
+          var newContent = require("!!./../../../node_modules/css-loader/index.js?sourceMap&modules&localIdentName=[name]_[local]_[hash:base64:3]!./../../../node_modules/postcss-loader/index.js!./MarkdownPage.scss");
+          if (typeof newContent === 'string') {
+            newContent = [[module.id, content, '']];
+          }
+          removeCss = insertCss(newContent, { replace: true });
+        });
+        module.hot.dispose(function() { removeCss(); });
+      }
+    
+
+/***/ },
+/* 48 */
+/***/ function(module, exports, __webpack_require__) {
+
+  exports = module.exports = __webpack_require__(19)();
+  // imports
+  
+  
+  // module
+  exports.push([module.id, "/**\r\n * React Starter Kit (https://www.reactstarterkit.com/)\r\n *\r\n * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.\r\n *\r\n * This source code is licensed under the MIT license found in the\r\n * LICENSE.txt file in the root directory of this source tree.\r\n */\r\n\r\n/*\r\n * Colors\r\n * ========================================================================== */ /* #222 */   /* #404040 */ /* #555 */ /* #777 */ /* #eee */\r\n\r\n/*\r\n * Typography\r\n * ========================================================================== */\r\n\r\n/*\r\n * Layout\r\n * ========================================================================== */\r\n\r\n/*\r\n * Media queries breakpoints\r\n * ========================================================================== */  /* Extra small screen / phone */  /* Small screen / tablet */  /* Medium screen / desktop */ /* Large screen / wide desktop */\r\n\r\n/*\r\n * Animations\r\n * ========================================================================== */\r\n\r\n.MarkdownPage_root_3lx {\r\n\r\n}\r\n\r\n.MarkdownPage_container_3Ul {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 1000px;\r\n}\r\n", "", {"version":3,"sources":["/./src/components/MarkdownPage/MarkdownPage.scss","/./src/components/variables.scss"],"names":[],"mappings":"AAAA;;;;;;;GAOG;;ACPH;;gFAEgF,CAGxB,UAAU,GACV,aAAa,CACb,UAAU,CACV,UAAU,CACV,UAAU;;AAElE;;gFAEgF;;AAIhF;;gFAEgF;;AAIhF;;gFAEgF,EAEhD,gCAAgC,EAChC,2BAA2B,EAC3B,6BAA6B,CAC7B,iCAAiC;;AAEjE;;gFAEgF;;ADvBhF;;CAEC;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,kBAA8B;CAC/B","file":"MarkdownPage.scss","sourcesContent":["/**\r\n * React Starter Kit (https://www.reactstarterkit.com/)\r\n *\r\n * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.\r\n *\r\n * This source code is licensed under the MIT license found in the\r\n * LICENSE.txt file in the root directory of this source tree.\r\n */\r\n\r\n@import '../variables.scss';\r\n\r\n.root {\r\n\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: $max-content-width;\r\n}\r\n","/*\r\n * Colors\r\n * ========================================================================== */\r\n\r\n$white-base:            hsl(255, 255, 255);\r\n$gray-darker:           color(black lightness(+13.5%)); /* #222 */\r\n$gray-dark:             color(black lightness(+25%));   /* #404040 */\r\n$gray:                  color(black lightness(+33.5%)); /* #555 */\r\n$gray-light:            color(black lightness(+46.7%)); /* #777 */\r\n$gray-lighter:          color(black lightness(+93.5%)); /* #eee */\r\n\r\n/*\r\n * Typography\r\n * ========================================================================== */\r\n\r\n$font-family-base:      'Segoe UI', 'HelveticaNeue-Light', sans-serif;\r\n\r\n/*\r\n * Layout\r\n * ========================================================================== */\r\n\r\n$max-content-width:     1000px;\r\n\r\n/*\r\n * Media queries breakpoints\r\n * ========================================================================== */\r\n\r\n$screen-xs-min:         480px;  /* Extra small screen / phone */\r\n$screen-sm-min:         768px;  /* Small screen / tablet */\r\n$screen-md-min:         992px;  /* Medium screen / desktop */\r\n$screen-lg-min:         1200px; /* Large screen / wide desktop */\r\n\r\n/*\r\n * Animations\r\n * ========================================================================== */\r\n\r\n$animation-swift-out:   .45s cubic-bezier(0.3, 1, 0.4, 1) 0s;\r\n"],"sourceRoot":"webpack://"}]);
+  
+  // exports
+  exports.locals = {
+  	"root": "MarkdownPage_root_3lx",
+  	"container": "MarkdownPage_container_3Ul"
+  };
+
+/***/ },
+/* 49 */
+/***/ function(module, exports) {
+
+  module.exports = require("react-remarkable");
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+  /**
+   * React Starter Kit (https://www.reactstarterkit.com/)
+   *
+   * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE.txt file in the root directory of this source tree.
+   */
+  
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+  
+  var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  
+  function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  
+  var _react = __webpack_require__(4);
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _ContactPageScss = __webpack_require__(51);
   
   var _ContactPageScss2 = _interopRequireDefault(_ContactPageScss);
   
@@ -2841,11 +3091,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 47 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(48);
+      var content = __webpack_require__(52);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -2873,7 +3123,7 @@ module.exports =
     
 
 /***/ },
-/* 48 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -2890,7 +3140,7 @@ module.exports =
   };
 
 /***/ },
-/* 49 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -2922,7 +3172,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _LoginPageScss = __webpack_require__(50);
+  var _LoginPageScss = __webpack_require__(54);
   
   var _LoginPageScss2 = _interopRequireDefault(_LoginPageScss);
   
@@ -2985,11 +3235,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 50 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(51);
+      var content = __webpack_require__(55);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3017,7 +3267,7 @@ module.exports =
     
 
 /***/ },
-/* 51 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3034,7 +3284,7 @@ module.exports =
   };
 
 /***/ },
-/* 52 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3066,7 +3316,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _RegisterPageScss = __webpack_require__(53);
+  var _RegisterPageScss = __webpack_require__(57);
   
   var _RegisterPageScss2 = _interopRequireDefault(_RegisterPageScss);
   
@@ -3129,11 +3379,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 53 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(54);
+      var content = __webpack_require__(58);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3161,7 +3411,7 @@ module.exports =
     
 
 /***/ },
-/* 54 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3178,7 +3428,7 @@ module.exports =
   };
 
 /***/ },
-/* 55 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3210,7 +3460,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _NotFoundPageScss = __webpack_require__(56);
+  var _NotFoundPageScss = __webpack_require__(60);
   
   var _NotFoundPageScss2 = _interopRequireDefault(_NotFoundPageScss);
   
@@ -3271,11 +3521,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 56 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(57);
+      var content = __webpack_require__(61);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3303,7 +3553,7 @@ module.exports =
     
 
 /***/ },
-/* 57 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3317,7 +3567,7 @@ module.exports =
 
 
 /***/ },
-/* 58 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3349,7 +3599,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _ErrorPageScss = __webpack_require__(59);
+  var _ErrorPageScss = __webpack_require__(63);
   
   var _ErrorPageScss2 = _interopRequireDefault(_ErrorPageScss);
   
@@ -3409,11 +3659,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 59 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(60);
+      var content = __webpack_require__(64);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3441,7 +3691,7 @@ module.exports =
     
 
 /***/ },
-/* 60 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3455,7 +3705,7 @@ module.exports =
 
 
 /***/ },
-/* 61 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3560,13 +3810,13 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 62 */
+/* 66 */
 /***/ function(module, exports) {
 
   module.exports = require("./assets");
 
 /***/ },
-/* 63 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3588,7 +3838,7 @@ module.exports =
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
   
-  var _fs = __webpack_require__(64);
+  var _fs = __webpack_require__(68);
   
   var _fs2 = _interopRequireDefault(_fs);
   
@@ -3596,15 +3846,15 @@ module.exports =
   
   var _express = __webpack_require__(3);
   
-  var _bluebird = __webpack_require__(65);
+  var _bluebird = __webpack_require__(69);
   
   var _bluebird2 = _interopRequireDefault(_bluebird);
   
-  var _jade = __webpack_require__(66);
+  var _jade = __webpack_require__(70);
   
   var _jade2 = _interopRequireDefault(_jade);
   
-  var _frontMatter = __webpack_require__(67);
+  var _frontMatter = __webpack_require__(71);
   
   var _frontMatter2 = _interopRequireDefault(_frontMatter);
   
@@ -3701,28 +3951,279 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 64 */
+/* 68 */
 /***/ function(module, exports) {
 
   module.exports = require("fs");
 
 /***/ },
-/* 65 */
+/* 69 */
 /***/ function(module, exports) {
 
   module.exports = require("bluebird");
 
 /***/ },
-/* 66 */
+/* 70 */
 /***/ function(module, exports) {
 
   module.exports = require("jade");
 
 /***/ },
-/* 67 */
+/* 71 */
 /***/ function(module, exports) {
 
   module.exports = require("front-matter");
+
+/***/ },
+/* 72 */
+/***/ function(module, exports, __webpack_require__) {
+
+  /**
+   * React Starter Kit (https://www.reactstarterkit.com/)
+   *
+   * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE.txt file in the root directory of this source tree.
+   */
+  
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  var _this = this;
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  var _fs = __webpack_require__(68);
+  
+  var _fs2 = _interopRequireDefault(_fs);
+  
+  var _path = __webpack_require__(2);
+  
+  var _express = __webpack_require__(3);
+  
+  var _bluebird = __webpack_require__(69);
+  
+  var _bluebird2 = _interopRequireDefault(_bluebird);
+  
+  // A folder with Jade/Markdown/HTML content pages
+  var CONTENT_DIR = (0, _path.join)(__dirname, './markdown');
+  var readFile = _bluebird2['default'].promisify(_fs2['default'].readFile);
+  var fileExists = function fileExists(filename) {
+    return new _bluebird2['default'](function (resolve) {
+      _fs2['default'].exists(filename, resolve);
+    });
+  };
+  
+  var dirExists = function dirExists(dirname) {
+    return new _bluebird2['default'](function (resolve) {
+      _fs2['default'].stat(dirname, function (er, s) {
+        return resolve(!er && s.isDirectory());
+      });
+    });
+  };
+  
+  var readdir = function readdir(dirname) {
+    return new _bluebird2['default'](function (resolve) {
+      _fs2['default'].readdir(dirname, function (er, ss) {
+        return resolve(ss);
+      });
+    });
+  };
+  
+  var router = new _express.Router();
+  
+  function dirs(path) {
+    var dirName, _dirs, dirss, arr;
+  
+    return regeneratorRuntime.async(function dirs$(context$1$0) {
+      while (1) switch (context$1$0.prev = context$1$0.next) {
+        case 0:
+          dirName = (0, _path.join)(CONTENT_DIR, path);
+          context$1$0.next = 3;
+          return regeneratorRuntime.awrap(readdir(dirName));
+  
+        case 3:
+          _dirs = context$1$0.sent;
+  
+          if (!_dirs) {
+            context$1$0.next = 10;
+            break;
+          }
+  
+          dirss = _dirs.filter(function (d) {
+            return d !== 'readme.md';
+          }).map(function (name) {
+            return dirExists((0, _path.join)(dirName, name)).then(function (isDirectory) {
+              return readdir((0, _path.join)(dirName, name)).then(function (ds) {
+                return {
+                  name: name,
+                  'path': (0, _path.join)(path, isDirectory ? name : name.substring(0, name.lastIndexOf('.md'))),
+                  'children': ds,
+                  isDirectory: isDirectory
+                };
+              });
+            });
+          });
+          context$1$0.next = 8;
+          return regeneratorRuntime.awrap(_bluebird2['default'].all(dirss));
+  
+        case 8:
+          arr = context$1$0.sent;
+          return context$1$0.abrupt('return', arr);
+  
+        case 10:
+          return context$1$0.abrupt('return', []);
+  
+        case 11:
+        case 'end':
+          return context$1$0.stop();
+      }
+    }, null, this);
+  }
+  
+  router.get('/', function callee$0$0(req, res, next) {
+    var path, names, dirName, options, fileName, content;
+    return regeneratorRuntime.async(function callee$0$0$(context$1$0) {
+      while (1) switch (context$1$0.prev = context$1$0.next) {
+        case 0:
+          context$1$0.prev = 0;
+          path = req.query.path;
+          names = path.split('/');
+          context$1$0.t0 = !path;
+  
+          if (context$1$0.t0) {
+            context$1$0.next = 8;
+            break;
+          }
+  
+          context$1$0.next = 7;
+          return regeneratorRuntime.awrap(dirExists((0, _path.join)(CONTENT_DIR, path)));
+  
+        case 7:
+          context$1$0.t0 = context$1$0.sent;
+  
+        case 8:
+          if (!context$1$0.t0) {
+            context$1$0.next = 30;
+            break;
+          }
+  
+          dirName = (0, _path.join)(CONTENT_DIR, path);
+          context$1$0.next = 12;
+          return regeneratorRuntime.awrap(dirExists(dirName));
+  
+        case 12:
+          if (context$1$0.sent) {
+            context$1$0.next = 14;
+            break;
+          }
+  
+          throw 'no directory \'' + path + '\'';
+  
+        case 14:
+          context$1$0.next = 16;
+          return regeneratorRuntime.awrap(dirs(path));
+  
+        case 16:
+          options = context$1$0.sent;
+          fileName = (0, _path.join)(dirName, '/readme.md');
+          context$1$0.next = 20;
+          return regeneratorRuntime.awrap(fileExists(fileName));
+  
+        case 20:
+          if (context$1$0.sent) {
+            context$1$0.next = 24;
+            break;
+          }
+  
+          res.status(200).send({ options: options, 'content': null, name: names[names.length - 1], path: path });
+          context$1$0.next = 28;
+          break;
+  
+        case 24:
+          context$1$0.next = 26;
+          return regeneratorRuntime.awrap(readFile(fileName, { encoding: 'utf8' }));
+  
+        case 26:
+          content = context$1$0.sent;
+  
+          res.status(200).send({ options: options, content: content, name: names[names.length - 1], path: path });
+  
+        case 28:
+          context$1$0.next = 50;
+          break;
+  
+        case 30:
+          fileName = (0, _path.join)(CONTENT_DIR, (path === '/' ? '/readme' : path) + '.md');
+          context$1$0.next = 33;
+          return regeneratorRuntime.awrap(fileExists(fileName));
+  
+        case 33:
+          if (context$1$0.sent) {
+            context$1$0.next = 35;
+            break;
+          }
+  
+          fileName = (0, _path.join)(CONTENT_DIR, path + '/readme.md');
+  
+        case 35:
+          dirName = path;
+  
+          if (path.indexOf('/') !== -1) {
+            dirName = path.substring(0, path.lastIndexOf('/'));
+          } else {
+            dirName = '';
+          }
+          context$1$0.next = 39;
+          return regeneratorRuntime.awrap(dirs(dirName));
+  
+        case 39:
+          options = context$1$0.sent;
+          context$1$0.next = 42;
+          return regeneratorRuntime.awrap(fileExists(fileName));
+  
+        case 42:
+          if (context$1$0.sent) {
+            context$1$0.next = 46;
+            break;
+          }
+  
+          res.status(404).send({ error: 'The page \'' + path + '\' is not found.' });
+          context$1$0.next = 50;
+          break;
+  
+        case 46:
+          context$1$0.next = 48;
+          return regeneratorRuntime.awrap(readFile(fileName, { encoding: 'utf8' }));
+  
+        case 48:
+          content = context$1$0.sent;
+  
+          res.status(200).send({ options: options, content: content, name: names[names.length - 1], path: dirName });
+  
+        case 50:
+          context$1$0.next = 55;
+          break;
+  
+        case 52:
+          context$1$0.prev = 52;
+          context$1$0.t1 = context$1$0['catch'](0);
+  
+          next(context$1$0.t1);
+  
+        case 55:
+        case 'end':
+          return context$1$0.stop();
+      }
+    }, null, _this, [[0, 52]]);
+  });
+  
+  exports['default'] = router;
+  module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

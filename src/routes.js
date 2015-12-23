@@ -12,6 +12,7 @@ import Router from 'react-routing/src/Router';
 import fetch from './core/fetch';
 import App from './components/App';
 import ContentPage from './components/ContentPage';
+import MarkdownPage from './components/MarkdownPage';
 import ContactPage from './components/ContactPage';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
@@ -29,6 +30,16 @@ const router = new Router(on => {
   on('/login', async () => <LoginPage />);
 
   on('/register', async () => <RegisterPage />);
+  on('/markdown', async () => {
+    const response = await fetch(`/api/markdown?path=`);
+    const content = await response.json();
+    return response && <MarkdownPage {...content} />;
+  });
+  on('/markdown/*', async (state) => {
+    const response = await fetch(`/api/markdown?path=${state.path.slice(10)}`);
+    const content = await response.json();
+    return response && <MarkdownPage {...content} />;
+  });
 
   on('*', async (state) => {
     const response = await fetch(`/api/content?path=${state.path}`);
