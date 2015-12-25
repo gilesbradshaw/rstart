@@ -32,21 +32,22 @@ class MarkdownPage extends Component {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <h1>{this.props.name}</h1>
-          <div>
-            {links.map(l=><span><a className={s.brand} href={'/markdown' + l.href} onClick={Link.handleClick}>
-                  <img src={require('../Header/logo-small.png')} width="38" height="38" alt="React" />
+          <ul className="nav nav-pills" role="pilllist">
+            {links.map(l=><li key={l.path} role="presentation" className = {l.href === '/' + this.props.path ? 'active' : ''}>  
+                <a className={s.brand} href={'/markdown' + l.href} onClick={Link.handleClick}>
                   <span className={s.brandTxt}>{l.name}</span>
-                </a></span>)}
-          </div>
-          <ul>
-            {this.props.options.map(o=>
-              <li key={o.name}>
-                <a className={s.brand} href={'/markdown/' + o.path} onClick={Link.handleClick}>
-                  <img src={require('../Header/logo-small.png')} width="38" height="38" alt="React" />
-                  <span className={s.brandTxt}>{o.name}</span>
                 </a>
               </li>)}
+          </ul>
+          <ul className="nav nav-pills" role="tablist">
+            {this.props.options.map(o=>
+              <li key={o.name} role="presentation" className={o.path.replace(/\\/g, '/') === this.props.path ? 'active' : ''}>
+                
+                  <a className={s.brand} href={'/markdown/' + o.path} onClick={Link.handleClick}>
+                    <span className={s.brandTxt}>{o.name}</span>
+                  </a>
+              </li>
+              )}
           </ul>
           <Markdown source={this.props.content || ''} />
         </div>

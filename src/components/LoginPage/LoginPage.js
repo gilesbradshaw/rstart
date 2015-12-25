@@ -29,6 +29,11 @@ class LoginPage extends Component {
       <div className={s.root}>
         <div className={s.container}>
           <h1>{title}</h1>
+          <ul>
+                <li>
+                    <a href="/auth/github">Login with github</a>
+                </li>
+          </ul>
           <p>...</p>
         </div>
       </div>

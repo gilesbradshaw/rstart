@@ -83,28 +83,144 @@ module.exports =
   
   var _routes2 = _interopRequireDefault(_routes);
   
-  var _componentsHtml = __webpack_require__(65);
+  var _componentsHtml = __webpack_require__(75);
   
   var _componentsHtml2 = _interopRequireDefault(_componentsHtml);
   
-  var _assets = __webpack_require__(66);
+  var _assets = __webpack_require__(76);
   
   var _assets2 = _interopRequireDefault(_assets);
   
   var _config = __webpack_require__(14);
   
+  var _iso = __webpack_require__(77);
+  
+  var _iso2 = _interopRequireDefault(_iso);
+  
+  var _alt = __webpack_require__(44);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _passport = __webpack_require__(78);
+  
+  var _passport2 = _interopRequireDefault(_passport);
+  
+  var _expressSession = __webpack_require__(79);
+  
+  var _expressSession2 = _interopRequireDefault(_expressSession);
+  
+  var _bodyParser = __webpack_require__(80);
+  
+  var _bodyParser2 = _interopRequireDefault(_bodyParser);
+  
+  var _methodOverride = __webpack_require__(81);
+  
+  var _methodOverride2 = _interopRequireDefault(_methodOverride);
+  
+  var _passportGithub2 = __webpack_require__(82);
+  
+  var _expressPartials = __webpack_require__(83);
+  
+  var _expressPartials2 = _interopRequireDefault(_expressPartials);
+  
+  var _secrets = __webpack_require__(84);
+  
+  var _secrets2 = _interopRequireDefault(_secrets);
+  
   var server = global.server = (0, _express2['default'])();
+  
+  // Passport session setup.
+  //   To support persistent login sessions, Passport needs to be able to
+  //   serialize users into and deserialize users out of the session.  Typically,
+  //   this will be as simple as storing the user ID when serializing, and finding
+  //   the user by ID when deserializing.  However, since this example does not
+  //   have a database of user records, the complete GitHub profile is serialized
+  //   and deserialized.
+  _passport2['default'].serializeUser(function (user, done) {
+    return done(null, user);
+  });
+  
+  _passport2['default'].deserializeUser(function (obj, done) {
+    return done(null, obj);
+  });
+  
+  // Use the GitHubStrategy within Passport.
+  //   Strategies in Passport require a `verify` function, which accept
+  //   credentials (in this case, an accessToken, refreshToken, and GitHub
+  //   profile), and invoke a callback with a user object.
+  _passport2['default'].use(new _passportGithub2.Strategy({
+    clientID: _secrets2['default'].GITHUB_CLIENT_ID,
+    clientSecret: _secrets2['default'].GITHUB_CLIENT_SECRET,
+    callbackURL: 'http://localhost:3000/auth/github/callback'
+  }, function (accessToken, refreshToken, profile, done) {
+    // asynchronous verification, for effect...
+    process.nextTick(function () {
+      return(
+        // To keep the example simple, the user's GitHub profile is returned to
+        // represent the logged-in user.  In a typical application, you would want
+        // to associate the GitHub account with a user record in your database,
+        // and return that user instead.
+        done(null, profile)
+      );
+    });
+  }));
+  
+  server.use((0, _expressPartials2['default'])());
+  server.use((0, _bodyParser2['default'])());
+  server.use((0, _methodOverride2['default'])());
+  server.use((0, _expressSession2['default'])({ secret: 'keyboard cat' }));
+  // Initialize Passport!  Also use passport.session() middleware, to support
+  // persistent login sessions (recommended).
+  server.use(_passport2['default'].initialize());
+  server.use(_passport2['default'].session());
+  
+  // GET /auth/github
+  //   Use passport.authenticate() as route middleware to authenticate the
+  //   request.  The first step in GitHub authentication will involve redirecting
+  //   the user to github.com.  After authorization, GitHub will redirect the user
+  //   back to this application at /auth/github/callback
+  server.get('/auth/github', _passport2['default'].authenticate('github', { scope: ['user:email'] }), function () {
+    return undefined;
+  });
+  
+  // GET /auth/github/callback
+  //   Use passport.authenticate() as route middleware to authenticate the
+  //   request.  If authentication fails, the user will be redirected back to the
+  //   login page.  Otherwise, the primary route function will be called,
+  //   which, in this example, will redirect the user to the home page.
+  server.get('/auth/github/callback', _passport2['default'].authenticate('github', { failureRedirect: '/login' }), function (req, res) {
+    return res.redirect('/' + req.user.displayName);
+  });
+  
+  server.get('/logout', function (req, res) {
+    req.logout();
+    res.redirect('/');
+  });
+  
+  // Simple route middleware to ensure user is authenticated.
+  //   Use this route middleware on any resource that needs to be protected.  If
+  //   the request is authenticated (typically via a persistent login session),
+  //   the request will proceed.  Otherwise, the user will be redirected to the
+  //   login page.
+  function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.redirect('/login');
+  }
   
   //
   // Register Node.js middleware
   // -----------------------------------------------------------------------------
   server.use(_express2['default']['static'](_path2['default'].join(__dirname, 'public')));
   
+  server.use('/css/bootstrap', _express2['default']['static'](__dirname + '/public/bower_components/bootstrap/dist/css'));
+  
   //
   // Register API middleware
   // -----------------------------------------------------------------------------
-  server.use('/api/content', __webpack_require__(67));
-  server.use('/api/markdown', __webpack_require__(72));
+  server.use('/api/content', __webpack_require__(85));
+  server.use('/api/markdown', __webpack_require__(90));
   
   //
   // Register server-side rendering middleware
@@ -118,12 +234,16 @@ module.exports =
           context$1$0.prev = 0;
           context$1$0.next = 3;
           return regeneratorRuntime.awrap((function callee$1$0() {
-            var statusCode, data, css, context, html;
+            var statusCode, data, css, context, altData, html;
             return regeneratorRuntime.async(function callee$1$0$(context$2$0) {
               while (1) switch (context$2$0.prev = context$2$0.next) {
                 case 0:
                   statusCode = 200;
-                  data = { title: '', description: '', css: '', body: '', entry: _assets2['default'].main.js };
+                  data = {
+                    title: '', description: '',
+                    css: '',
+                    body: '',
+                    entry: _assets2['default'].main.js };
                   css = [];
                   context = {
                     insertCss: function insertCss(styles) {
@@ -137,20 +257,25 @@ module.exports =
                     },
                     onPageNotFound: function onPageNotFound() {
                       return statusCode = 404;
-                    }
+                    },
+                    user: req.user
                   };
-                  context$2$0.next = 6;
+                  altData = { MarkdownStore: { markdown: 'booooo' }, UserStore: { user: req.user ? req.user.displayName : '?&&&&&&?' }, ProductStore: { products: [1, 2, 3] } };
+  
+                  _alt2['default'].bootstrap(JSON.stringify(altData));
+  
+                  context$2$0.next = 8;
                   return regeneratorRuntime.awrap(_routes2['default'].dispatch({ path: req.path, query: req.query, context: context }, function (state, component) {
-                    data.body = _reactDomServer2['default'].renderToString(component);
+                    data.body = _iso2['default'].render(_reactDomServer2['default'].renderToString(component), _alt2['default'].flush());
                     data.css = css.join('');
                   }));
   
-                case 6:
+                case 8:
                   html = _reactDomServer2['default'].renderToStaticMarkup(_react2['default'].createElement(_componentsHtml2['default'], data));
   
-                  res.status(statusCode).send('<!doctype html>\n' + html);
+                  res.status(statusCode).send(req.user + '<!doctype html>\n ' + html);
   
-                case 8:
+                case 10:
                 case 'end':
                   return context$2$0.stop();
               }
@@ -251,31 +376,31 @@ module.exports =
   
   var _componentsApp2 = _interopRequireDefault(_componentsApp);
   
-  var _componentsContentPage = __webpack_require__(43);
+  var _componentsContentPage = __webpack_require__(53);
   
   var _componentsContentPage2 = _interopRequireDefault(_componentsContentPage);
   
-  var _componentsMarkdownPage = __webpack_require__(46);
+  var _componentsMarkdownPage = __webpack_require__(56);
   
   var _componentsMarkdownPage2 = _interopRequireDefault(_componentsMarkdownPage);
   
-  var _componentsContactPage = __webpack_require__(50);
+  var _componentsContactPage = __webpack_require__(60);
   
   var _componentsContactPage2 = _interopRequireDefault(_componentsContactPage);
   
-  var _componentsLoginPage = __webpack_require__(53);
+  var _componentsLoginPage = __webpack_require__(63);
   
   var _componentsLoginPage2 = _interopRequireDefault(_componentsLoginPage);
   
-  var _componentsRegisterPage = __webpack_require__(56);
+  var _componentsRegisterPage = __webpack_require__(66);
   
   var _componentsRegisterPage2 = _interopRequireDefault(_componentsRegisterPage);
   
-  var _componentsNotFoundPage = __webpack_require__(59);
+  var _componentsNotFoundPage = __webpack_require__(69);
   
   var _componentsNotFoundPage2 = _interopRequireDefault(_componentsNotFoundPage);
   
-  var _componentsErrorPage = __webpack_require__(62);
+  var _componentsErrorPage = __webpack_require__(72);
   
   var _componentsErrorPage2 = _interopRequireDefault(_componentsErrorPage);
   
@@ -1389,13 +1514,88 @@ module.exports =
   
   var _Footer2 = _interopRequireDefault(_Footer);
   
+  var _storesProductStore = __webpack_require__(43);
+  
+  var _storesProductStore2 = _interopRequireDefault(_storesProductStore);
+  
+  var _storesUserStore = __webpack_require__(48);
+  
+  var _storesUserStore2 = _interopRequireDefault(_storesUserStore);
+  
+  var _actionsActionCreators = __webpack_require__(46);
+  
+  var _actionsActionCreators2 = _interopRequireDefault(_actionsActionCreators);
+  
+  var _altUtilsLibConnectToStores = __webpack_require__(49);
+  
+  var _altUtilsLibConnectToStores2 = _interopRequireDefault(_altUtilsLibConnectToStores);
+  
+  var _storesMarkdownStore = __webpack_require__(50);
+  
+  var _storesMarkdownStore2 = _interopRequireDefault(_storesMarkdownStore);
+  
+  function _getStateFromStores() {
+    return {
+      product: _storesProductStore2['default'].getState(),
+      user: _storesUserStore2['default'].getState()
+    };
+  }
+  
   var App = (function (_Component) {
     _inherits(App, _Component);
   
-    function App() {
-      _classCallCheck(this, App);
+    _createClass(App, null, [{
+      key: 'getStores',
+      value: function getStores(props) {
+        return [_storesMarkdownStore2['default'], _storesProductStore2['default'], _storesUserStore2['default']];
+      }
+    }, {
+      key: 'getPropsFromStores',
+      value: function getPropsFromStores(props) {
+        console.log("getting popos");
+        return {
+          product: _storesProductStore2['default'].getState(),
+          user: _storesUserStore2['default'].getState(),
+          markdown: _storesMarkdownStore2['default'].getState()
+        };
+      }
+    }, {
+      key: 'componentDidConnect',
+      value: function componentDidConnect() {
+        console.log("fetching by id");
+        _storesMarkdownStore2['default'].fetchById();
+      }
+    }, {
+      key: 'propTypes',
+      value: {
+        context: _react.PropTypes.shape({
+          insertCss: _react.PropTypes.func,
+          onSetTitle: _react.PropTypes.func,
+          onSetMeta: _react.PropTypes.func,
+          onPageNotFound: _react.PropTypes.func
+        }),
+        children: _react.PropTypes.element.isRequired,
+        error: _react.PropTypes.object,
+        markdown: _react.PropTypes.object
+      },
+      enumerable: true
+    }, {
+      key: 'childContextTypes',
+      value: {
+        insertCss: _react.PropTypes.func.isRequired,
+        onSetTitle: _react.PropTypes.func.isRequired,
+        onSetMeta: _react.PropTypes.func.isRequired,
+        onPageNotFound: _react.PropTypes.func.isRequired
+      },
+      enumerable: true
+    }]);
   
-      _get(Object.getPrototypeOf(App.prototype), 'constructor', this).apply(this, arguments);
+    function App() {
+      _classCallCheck(this, _App);
+  
+      _get(Object.getPrototypeOf(_App.prototype), 'constructor', this).call(this);
+      //this.state = _getStateFromStores();
+      //this._onChange = this._onChange.bind(this);
     }
   
     _createClass(App, [{
@@ -1415,9 +1615,22 @@ module.exports =
         this.removeCss = this.props.context.insertCss(_AppScss2['default']);
       }
     }, {
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        //console.log("fetching by id!!");
+        //MarkdownStore.fetchById();
+        //ProductStore.listen(this._onChange);
+      }
+    }, {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
+        //ProductStore.unlisten(this._onChange);
         this.removeCss();
+      }
+    }, {
+      key: 'changeProducts',
+      value: function changeProducts() {
+        _actionsActionCreators2['default'].receiveProducts([5, 6, 7, 8]);
       }
     }, {
       key: 'render',
@@ -1425,36 +1638,43 @@ module.exports =
         return !this.props.error ? _react2['default'].createElement(
           'div',
           null,
+          _react2['default'].createElement(
+            'span',
+            null,
+            this.props.user.user
+          ),
+          _react2['default'].createElement(
+            'span',
+            null,
+            this.props.markdown.markdown
+          ),
+          _react2['default'].createElement(
+            'button',
+            { className: 'uk-button uk-button-small uk-button-primary',
+              onClick: this.changeProducts },
+            'clickme'
+          ),
+          _react2['default'].createElement(
+            'ul',
+            null,
+            this.props.product.products.map(function (p) {
+              return _react2['default'].createElement(
+                'li',
+                { key: p },
+                p
+              );
+            })
+          ),
           _react2['default'].createElement(_Header2['default'], null),
           this.props.children,
           _react2['default'].createElement(_Feedback2['default'], null),
           _react2['default'].createElement(_Footer2['default'], null)
         ) : this.props.children;
       }
-    }], [{
-      key: 'propTypes',
-      value: {
-        context: _react.PropTypes.shape({
-          insertCss: _react.PropTypes.func,
-          onSetTitle: _react.PropTypes.func,
-          onSetMeta: _react.PropTypes.func,
-          onPageNotFound: _react.PropTypes.func
-        }),
-        children: _react.PropTypes.element.isRequired,
-        error: _react.PropTypes.object
-      },
-      enumerable: true
-    }, {
-      key: 'childContextTypes',
-      value: {
-        insertCss: _react.PropTypes.func.isRequired,
-        onSetTitle: _react.PropTypes.func.isRequired,
-        onSetMeta: _react.PropTypes.func.isRequired,
-        onPageNotFound: _react.PropTypes.func.isRequired
-      },
-      enumerable: true
     }]);
   
+    var _App = App;
+    App = (0, _altUtilsLibConnectToStores2['default'])(App) || App;
     return App;
   })(_react.Component);
   
@@ -1804,6 +2024,7 @@ module.exports =
         return _react2['default'].createElement(
           'div',
           { className: _HeaderScss2['default'].root },
+          'wdwdwd',
           _react2['default'].createElement(
             'div',
             { className: _HeaderScss2['default'].container },
@@ -2658,6 +2879,348 @@ module.exports =
 /* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  
+  var _alt = __webpack_require__(44);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _actionsActionCreators = __webpack_require__(46);
+  
+  var _actionsActionCreators2 = _interopRequireDefault(_actionsActionCreators);
+  
+  var ProductStore = (function () {
+    function ProductStore() {
+      _classCallCheck(this, ProductStore);
+  
+      this.bindActions(_actionsActionCreators2['default']);
+      this.products = [];
+    }
+  
+    _createClass(ProductStore, [{
+      key: 'decreaseInventory',
+      value: function decreaseInventory(product) {
+        product.inventory = product.inventory > 0 ? product.inventory - 1 : 0;
+      }
+    }, {
+      key: 'onAddToCart',
+      value: function onAddToCart(product) {
+        this.decreaseInventory(product);
+      }
+    }, {
+      key: 'onReceiveProducts',
+      value: function onReceiveProducts(products) {
+        this.products = products;
+      }
+    }]);
+  
+    return ProductStore;
+  })();
+  
+  exports['default'] = _alt2['default'].createStore(ProductStore, 'ProductStore');
+  module.exports = exports['default'];
+
+/***/ },
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  var _alt = __webpack_require__(45);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  exports['default'] = new _alt2['default']();
+  module.exports = exports['default'];
+
+/***/ },
+/* 45 */
+/***/ function(module, exports) {
+
+  module.exports = require("alt");
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  
+  var _alt = __webpack_require__(44);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _altUtilsLibDecorators = __webpack_require__(47);
+  
+  var ActionsCreators = (function () {
+    function ActionsCreators() {
+      _classCallCheck(this, _ActionsCreators);
+  
+      this.generateActions('receiveProducts', 'addToCart', 'finishCheckout');
+    }
+  
+    _createClass(ActionsCreators, [{
+      key: 'cartCheckout',
+      value: function cartCheckout(products) {
+        this.dispatch(products);
+      }
+    }]);
+  
+    var _ActionsCreators = ActionsCreators;
+    ActionsCreators = (0, _altUtilsLibDecorators.createActions)(_alt2['default'])(ActionsCreators) || ActionsCreators;
+    return ActionsCreators;
+  })();
+  
+  exports['default'] = ActionsCreators;
+  module.exports = exports['default'];
+
+/***/ },
+/* 47 */
+/***/ function(module, exports) {
+
+  module.exports = require("alt-utils/lib/decorators");
+
+/***/ },
+/* 48 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  
+  var _alt = __webpack_require__(44);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _actionsActionCreators = __webpack_require__(46);
+  
+  var _actionsActionCreators2 = _interopRequireDefault(_actionsActionCreators);
+  
+  var UserStore = function UserStore() {
+    _classCallCheck(this, UserStore);
+  
+    this.bindActions(_actionsActionCreators2['default']);
+    this.user = undefined;
+  };
+  
+  exports['default'] = _alt2['default'].createStore(UserStore, 'UserStore');
+  module.exports = exports['default'];
+
+/***/ },
+/* 49 */
+/***/ function(module, exports) {
+
+  module.exports = require("alt-utils/lib/connectToStores");
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  
+  var _alt = __webpack_require__(44);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _dataSourcesMarkdownSource = __webpack_require__(51);
+  
+  var _dataSourcesMarkdownSource2 = _interopRequireDefault(_dataSourcesMarkdownSource);
+  
+  var _actionsMarkdownActions = __webpack_require__(52);
+  
+  var _actionsMarkdownActions2 = _interopRequireDefault(_actionsMarkdownActions);
+  
+  var _altUtilsLibDecorators = __webpack_require__(47);
+  
+  var MarkdownStore = (function () {
+    function MarkdownStore() {
+      _classCallCheck(this, _MarkdownStore);
+  
+      this.bindActions(_actionsMarkdownActions2['default']);
+      this.state = {
+        markdown: 'blahhhhhh'
+      };
+    }
+  
+    _createClass(MarkdownStore, [{
+      key: 'onFetched',
+      value: function onFetched(ummm) {
+        console.log("FETCHEDDDDD");
+        this.setState(ummm);
+      }
+    }]);
+  
+    var _MarkdownStore = MarkdownStore;
+    MarkdownStore = (0, _altUtilsLibDecorators.datasource)(_dataSourcesMarkdownSource2['default'])(MarkdownStore) || MarkdownStore;
+    MarkdownStore = (0, _altUtilsLibDecorators.createStore)(_alt2['default'])(MarkdownStore) || MarkdownStore;
+    return MarkdownStore;
+  })();
+  
+  exports['default'] = MarkdownStore;
+  module.exports = exports['default'];
+
+/***/ },
+/* 51 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  var _alt = __webpack_require__(44);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _actionsMarkdownActions = __webpack_require__(52);
+  
+  var _actionsMarkdownActions2 = _interopRequireDefault(_actionsMarkdownActions);
+  
+  var MarkdownSource = {
+    fetchById: {
+      local: function local(state, id) {
+        return undefined; // will return `undefined` if there
+        // is no todo at that id
+      },
+      // `remote` is called if the return value of local == undefined
+      // It will receive the same parameters as local would but should
+      // return a promise.
+      remote: function remote(state, id) {
+        return new Promise(function (resolve, reject) {
+          return setTimeout(function () {
+            resolve({ markdown: 'hahhh' });
+            console.log("resolving...");
+          }, 4000);
+        });
+      },
+      shouldFetch: function shouldFetch(state, args) {
+        console.log('shopuld');
+        return true;
+      },
+  
+      // loading specifies an optional action to fire once `remote`
+      // has been called, this can be useful for doing things like
+      // clearing out data in the store if it should be replaced once
+      // the request completes.
+      // loading: TodoActions.fetchingTodo,
+  
+      // success is required and specifies what action should be
+      // called if the promise returned by remote resolves. This
+      // action will be passed the data resolved by the promise.
+      success: _actionsMarkdownActions2['default'].fetched,
+  
+      // error is required and specifies what action should be
+      // called if the promise returned by remote rejects. This
+      // action will be passed the data rejected by the promise.
+      error: _actionsMarkdownActions2['default'].fetchFailed
+    }
+  };
+  
+  exports['default'] = MarkdownSource;
+  module.exports = exports['default'];
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  
+  var _alt = __webpack_require__(44);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _altUtilsLibDecorators = __webpack_require__(47);
+  
+  var MarkdownActions = (function () {
+    function MarkdownActions() {
+      _classCallCheck(this, _MarkdownActions);
+    }
+  
+    _createClass(MarkdownActions, [{
+      key: 'fetched',
+      value: function fetched(payload) {
+        return payload;
+        return function (dispatch) {
+          console.log("displatchunbg" + payload.markdown); //
+          return dispatch(payload);
+        };
+      }
+    }, {
+      key: 'fetchedFailed',
+      value: function fetchedFailed(payload) {}
+      //const md = payload.data;
+      //this.dispatch(md);
+  
+      // ...
+  
+    }]);
+  
+    var _MarkdownActions = MarkdownActions;
+    MarkdownActions = (0, _altUtilsLibDecorators.createActions)(_alt2['default'])(MarkdownActions) || MarkdownActions;
+    return MarkdownActions;
+  })();
+  
+  exports['default'] = MarkdownActions;
+  module.exports = exports['default'];
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
   /**
    * React Starter Kit (https://www.reactstarterkit.com/)
    *
@@ -2687,7 +3250,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _ContentPageScss = __webpack_require__(44);
+  var _ContentPageScss = __webpack_require__(54);
   
   var _ContentPageScss2 = _interopRequireDefault(_ContentPageScss);
   
@@ -2748,11 +3311,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 44 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(45);
+      var content = __webpack_require__(55);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -2780,7 +3343,7 @@ module.exports =
     
 
 /***/ },
-/* 45 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -2797,7 +3360,7 @@ module.exports =
   };
 
 /***/ },
-/* 46 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -2829,7 +3392,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _MarkdownPageScss = __webpack_require__(47);
+  var _MarkdownPageScss = __webpack_require__(57);
   
   var _MarkdownPageScss2 = _interopRequireDefault(_MarkdownPageScss);
   
@@ -2837,7 +3400,7 @@ module.exports =
   
   var _decoratorsWithStyles2 = _interopRequireDefault(_decoratorsWithStyles);
   
-  var _reactRemarkable = __webpack_require__(49);
+  var _reactRemarkable = __webpack_require__(59);
   
   var _reactRemarkable2 = _interopRequireDefault(_reactRemarkable);
   
@@ -2857,6 +3420,8 @@ module.exports =
     _createClass(MarkdownPage, [{
       key: 'render',
       value: function render() {
+        var _this = this;
+  
         // this.context.onSetTitle(this.props.title);
         var links = this.props.path.split('/').reduce(function (prev, current) {
           return prev.concat([{ name: current, href: prev[prev.length - 1].href + '/' + current }]);
@@ -2868,21 +3433,15 @@ module.exports =
             'div',
             { className: _MarkdownPageScss2['default'].container },
             _react2['default'].createElement(
-              'h1',
-              null,
-              this.props.name
-            ),
-            _react2['default'].createElement(
-              'div',
-              null,
+              'ul',
+              { className: 'nav nav-pills', role: 'pilllist' },
               links.map(function (l) {
                 return _react2['default'].createElement(
-                  'span',
-                  null,
+                  'li',
+                  { key: l.path, role: 'presentation', className: l.href === '/' + _this.props.path ? 'active' : '' },
                   _react2['default'].createElement(
                     'a',
                     { className: _MarkdownPageScss2['default'].brand, href: '/markdown' + l.href, onClick: _Link2['default'].handleClick },
-                    _react2['default'].createElement('img', { src: __webpack_require__(36), width: '38', height: '38', alt: 'React' }),
                     _react2['default'].createElement(
                       'span',
                       { className: _MarkdownPageScss2['default'].brandTxt },
@@ -2894,15 +3453,14 @@ module.exports =
             ),
             _react2['default'].createElement(
               'ul',
-              null,
+              { className: 'nav nav-pills', role: 'tablist' },
               this.props.options.map(function (o) {
                 return _react2['default'].createElement(
                   'li',
-                  { key: o.name },
+                  { key: o.name, role: 'presentation', className: o.path.replace(/\\/g, '/') === _this.props.path ? 'active' : '' },
                   _react2['default'].createElement(
                     'a',
                     { className: _MarkdownPageScss2['default'].brand, href: '/markdown/' + o.path, onClick: _Link2['default'].handleClick },
-                    _react2['default'].createElement('img', { src: __webpack_require__(36), width: '38', height: '38', alt: 'React' }),
                     _react2['default'].createElement(
                       'span',
                       { className: _MarkdownPageScss2['default'].brandTxt },
@@ -2941,11 +3499,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 47 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(48);
+      var content = __webpack_require__(58);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -2973,7 +3531,7 @@ module.exports =
     
 
 /***/ },
-/* 48 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -2990,13 +3548,13 @@ module.exports =
   };
 
 /***/ },
-/* 49 */
+/* 59 */
 /***/ function(module, exports) {
 
   module.exports = require("react-remarkable");
 
 /***/ },
-/* 50 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3028,7 +3586,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _ContactPageScss = __webpack_require__(51);
+  var _ContactPageScss = __webpack_require__(61);
   
   var _ContactPageScss2 = _interopRequireDefault(_ContactPageScss);
   
@@ -3091,11 +3649,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 51 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(52);
+      var content = __webpack_require__(62);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3123,7 +3681,7 @@ module.exports =
     
 
 /***/ },
-/* 52 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3140,7 +3698,7 @@ module.exports =
   };
 
 /***/ },
-/* 53 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3172,7 +3730,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _LoginPageScss = __webpack_require__(54);
+  var _LoginPageScss = __webpack_require__(64);
   
   var _LoginPageScss2 = _interopRequireDefault(_LoginPageScss);
   
@@ -3211,6 +3769,19 @@ module.exports =
               title
             ),
             _react2['default'].createElement(
+              'ul',
+              null,
+              _react2['default'].createElement(
+                'li',
+                null,
+                _react2['default'].createElement(
+                  'a',
+                  { href: '/auth/github' },
+                  'Login with github'
+                )
+              )
+            ),
+            _react2['default'].createElement(
               'p',
               null,
               '...'
@@ -3235,11 +3806,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 54 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(55);
+      var content = __webpack_require__(65);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3267,7 +3838,7 @@ module.exports =
     
 
 /***/ },
-/* 55 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3284,7 +3855,7 @@ module.exports =
   };
 
 /***/ },
-/* 56 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3316,7 +3887,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _RegisterPageScss = __webpack_require__(57);
+  var _RegisterPageScss = __webpack_require__(67);
   
   var _RegisterPageScss2 = _interopRequireDefault(_RegisterPageScss);
   
@@ -3379,11 +3950,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 57 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(58);
+      var content = __webpack_require__(68);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3411,7 +3982,7 @@ module.exports =
     
 
 /***/ },
-/* 58 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3428,7 +3999,7 @@ module.exports =
   };
 
 /***/ },
-/* 59 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3460,7 +4031,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _NotFoundPageScss = __webpack_require__(60);
+  var _NotFoundPageScss = __webpack_require__(70);
   
   var _NotFoundPageScss2 = _interopRequireDefault(_NotFoundPageScss);
   
@@ -3521,11 +4092,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 60 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(61);
+      var content = __webpack_require__(71);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3553,7 +4124,7 @@ module.exports =
     
 
 /***/ },
-/* 61 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3567,7 +4138,7 @@ module.exports =
 
 
 /***/ },
-/* 62 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3599,7 +4170,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _ErrorPageScss = __webpack_require__(63);
+  var _ErrorPageScss = __webpack_require__(73);
   
   var _ErrorPageScss2 = _interopRequireDefault(_ErrorPageScss);
   
@@ -3659,11 +4230,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 63 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(64);
+      var content = __webpack_require__(74);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -3691,7 +4262,7 @@ module.exports =
     
 
 /***/ },
-/* 64 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -3705,7 +4276,7 @@ module.exports =
 
 
 /***/ },
-/* 65 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3773,6 +4344,7 @@ module.exports =
             _react2['default'].createElement('meta', { name: 'description', content: this.props.description }),
             _react2['default'].createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1' }),
             _react2['default'].createElement('link', { rel: 'apple-touch-icon', href: 'apple-touch-icon.png' }),
+            _react2['default'].createElement('link', { rel: 'stylesheet', href: '/css/bootstrap/bootstrap.min.css' }),
             _react2['default'].createElement('style', { id: 'css', dangerouslySetInnerHTML: { __html: this.props.css } })
           ),
           _react2['default'].createElement(
@@ -3810,13 +4382,67 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 66 */
+/* 76 */
 /***/ function(module, exports) {
 
   module.exports = require("./assets");
 
 /***/ },
-/* 67 */
+/* 77 */
+/***/ function(module, exports) {
+
+  module.exports = require("iso");
+
+/***/ },
+/* 78 */
+/***/ function(module, exports) {
+
+  module.exports = require("passport");
+
+/***/ },
+/* 79 */
+/***/ function(module, exports) {
+
+  module.exports = require("express-session");
+
+/***/ },
+/* 80 */
+/***/ function(module, exports) {
+
+  module.exports = require("body-parser");
+
+/***/ },
+/* 81 */
+/***/ function(module, exports) {
+
+  module.exports = require("method-override");
+
+/***/ },
+/* 82 */
+/***/ function(module, exports) {
+
+  module.exports = require("passport-github2");
+
+/***/ },
+/* 83 */
+/***/ function(module, exports) {
+
+  module.exports = require("express-partials");
+
+/***/ },
+/* 84 */
+/***/ function(module, exports) {
+
+  var secrets = {
+      GITHUB_CLIENT_ID: 'bba8d65b0cd5b2286ea2',
+      GITHUB_CLIENT_SECRET: 'a88e2bc8c1240539649703855935b4ebe5283006',
+  };
+  
+  module.exports = secrets;
+
+
+/***/ },
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3838,7 +4464,7 @@ module.exports =
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
   
-  var _fs = __webpack_require__(68);
+  var _fs = __webpack_require__(86);
   
   var _fs2 = _interopRequireDefault(_fs);
   
@@ -3846,15 +4472,15 @@ module.exports =
   
   var _express = __webpack_require__(3);
   
-  var _bluebird = __webpack_require__(69);
+  var _bluebird = __webpack_require__(87);
   
   var _bluebird2 = _interopRequireDefault(_bluebird);
   
-  var _jade = __webpack_require__(70);
+  var _jade = __webpack_require__(88);
   
   var _jade2 = _interopRequireDefault(_jade);
   
-  var _frontMatter = __webpack_require__(71);
+  var _frontMatter = __webpack_require__(89);
   
   var _frontMatter2 = _interopRequireDefault(_frontMatter);
   
@@ -3951,31 +4577,31 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 68 */
+/* 86 */
 /***/ function(module, exports) {
 
   module.exports = require("fs");
 
 /***/ },
-/* 69 */
+/* 87 */
 /***/ function(module, exports) {
 
   module.exports = require("bluebird");
 
 /***/ },
-/* 70 */
+/* 88 */
 /***/ function(module, exports) {
 
   module.exports = require("jade");
 
 /***/ },
-/* 71 */
+/* 89 */
 /***/ function(module, exports) {
 
   module.exports = require("front-matter");
 
 /***/ },
-/* 72 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -3997,7 +4623,7 @@ module.exports =
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
   
-  var _fs = __webpack_require__(68);
+  var _fs = __webpack_require__(86);
   
   var _fs2 = _interopRequireDefault(_fs);
   
@@ -4005,7 +4631,7 @@ module.exports =
   
   var _express = __webpack_require__(3);
   
-  var _bluebird = __webpack_require__(69);
+  var _bluebird = __webpack_require__(87);
   
   var _bluebird2 = _interopRequireDefault(_bluebird);
   
@@ -4203,7 +4829,7 @@ module.exports =
         case 48:
           content = context$1$0.sent;
   
-          res.status(200).send({ options: options, content: content, name: names[names.length - 1], path: dirName });
+          res.status(200).send({ options: options, content: content, name: names[names.length - 1], path: path });
   
         case 50:
           context$1$0.next = 55;

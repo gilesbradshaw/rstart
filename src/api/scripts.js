@@ -57,7 +57,8 @@ router.get('/', async (req, res, next) => {
       if (!(await dirExists(dirName))) {
         throw `no directory '${path}'`;
       }
-      const options = await dirs(path);    
+      const options = await dirs(path);
+      
       const fileName = join(dirName, '/readme.md');
       if (!(await fileExists(fileName))) {
         res.status(200).send({ options, 'content': null, name: names[names.length - 1], path });
