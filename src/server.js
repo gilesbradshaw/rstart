@@ -160,7 +160,7 @@ server.get('*', async (req, res, next) => {
 
     //const response = await fetch(`/api/markdown?path=`);
     //const content = await response.json();
-    const altData = { MarkdownStore: { pages:{} }, UserStore: {user: req.user ? req.user.displayName : '?&&&&&&?'}, ProductStore: { products: [1, 2, 3] } };
+    const altData = { MarkdownStore: { pages:{} }, UserStore: {user: req.user ? req.user.displayName : ''}, ProductStore: { products: [1, 2, 3] } };
     alt.bootstrap(JSON.stringify(altData));
 
       await Router.dispatch({ path: req.path, query: req.query, context }, (state, component) => {

@@ -268,7 +268,7 @@ module.exports =
                     },
                     user: req.user
                   };
-                  altData = { MarkdownStore: { pages: {} }, UserStore: { user: req.user ? req.user.displayName : '?&&&&&&?' }, ProductStore: { products: [1, 2, 3] } };
+                  altData = { MarkdownStore: { pages: {} }, UserStore: { user: req.user ? req.user.displayName : '' }, ProductStore: { products: [1, 2, 3] } };
   
                   _alt2['default'].bootstrap(JSON.stringify(altData));
   
@@ -4759,104 +4759,179 @@ module.exports =
   }
   
   router.get('/', function callee$0$0(req, res, next) {
-    var path, names, dirName, options, fileName, apiResult, apiResultContent, ct, content;
+    var path, names, apiResult1, apiResultContent1, myOptions, readmeResult1, readmeResultContent1, readmect, dirContents, dirContentsResult, dirContentsContent, dirContentsOptions, dirName, options, fileName, apiResult, apiResultContent, ct, content;
     return regeneratorRuntime.async(function callee$0$0$(context$1$0) {
       while (1) switch (context$1$0.prev = context$1$0.next) {
         case 0:
           context$1$0.prev = 0;
           path = req.query.path;
           names = path.split('/');
-          context$1$0.t0 = !path;
+          context$1$0.next = 5;
+          return regeneratorRuntime.awrap((0, _coreFetch2['default'])('https://api.github.com/repos/gilesbradshaw/rstart/contents/src/markdown/' + encodeURI(path) + '?client_id=' + _secrets2['default'].GITHUB_CLIENT_ID + '&client_secret=' + _secrets2['default'].GITHUB_CLIENT_SECRET));
   
-          if (context$1$0.t0) {
-            context$1$0.next = 8;
+        case 5:
+          apiResult1 = context$1$0.sent;
+          context$1$0.next = 8;
+          return regeneratorRuntime.awrap(apiResult1.json());
+  
+        case 8:
+          apiResultContent1 = context$1$0.sent;
+  
+          console.log(JSON.stringify(apiResultContent1));
+  
+          if (!Array.isArray(apiResultContent1)) {
+            context$1$0.next = 23;
             break;
           }
   
-          context$1$0.next = 7;
+          myOptions = apiResultContent1.filter(function (r) {
+            return r.name.toUpperCase() !== 'README.MD';
+          }).map(function (r) {
+            return {
+              name: r.name,
+              path: r.path.substring(13) + (r.type === 'dir' ? '/' : ''),
+              isDirectory: r.type === 'dir'
+            };
+          });
+          context$1$0.next = 14;
+          return regeneratorRuntime.awrap((0, _coreFetch2['default'])('https://api.github.com/repos/gilesbradshaw/rstart/contents/src/markdown/' + encodeURI(path) + 'readme.md?client_id=' + _secrets2['default'].GITHUB_CLIENT_ID + '&client_secret=' + _secrets2['default'].GITHUB_CLIENT_SECRET));
+  
+        case 14:
+          readmeResult1 = context$1$0.sent;
+          context$1$0.next = 17;
+          return regeneratorRuntime.awrap(readmeResult1.json());
+  
+        case 17:
+          readmeResultContent1 = context$1$0.sent;
+  
+          if (readmeResultContent1.content) {
+            readmect = new Buffer(readmeResultContent1.content, 'base64').toString('ascii');
+  
+            console.log('content:' + readmect);
+  
+            res.status(200).send({ options: myOptions, content: readmect, name: names[names.length - 1], path: path });
+          } else {
+            res.status(200).send({ options: myOptions, content: 'no readme', name: names[names.length - 1], path: path });
+          }
+  
+          console.log('IS array!!!' + JSON.stringify(myOptions));
+          return context$1$0.abrupt('return');
+  
+        case 23:
+          dirContents = path.substring(0, path.lastIndexOf('/'));
+          context$1$0.next = 26;
+          return regeneratorRuntime.awrap((0, _coreFetch2['default'])('https://api.github.com/repos/gilesbradshaw/rstart/contents/src/markdown/' + encodeURI(dirContents) + '?client_id=' + _secrets2['default'].GITHUB_CLIENT_ID + '&client_secret=' + _secrets2['default'].GITHUB_CLIENT_SECRET));
+  
+        case 26:
+          dirContentsResult = context$1$0.sent;
+          context$1$0.next = 29;
+          return regeneratorRuntime.awrap(dirContentsResult.json());
+  
+        case 29:
+          dirContentsContent = context$1$0.sent;
+          dirContentsOptions = dirContentsContent.filter(function (r) {
+            return r.name.toUpperCase() !== 'README.MD';
+          }).map(function (r) {
+            return {
+              name: r.name,
+              path: r.path.substring(13) + (r.type === 'dir' ? '/' : ''),
+              isDirectory: r.type === 'dir'
+            };
+          });
+  
+          res.status(200).send({ options: dirContentsOptions, content: new Buffer(apiResultContent1.content, 'base64').toString('ascii'), name: names[names.length - 1], path: path });
+          return context$1$0.abrupt('return');
+  
+        case 34:
+          context$1$0.t0 = !path;
+  
+          if (context$1$0.t0) {
+            context$1$0.next = 39;
+            break;
+          }
+  
+          context$1$0.next = 38;
           return regeneratorRuntime.awrap(dirExists((0, _path.join)(CONTENT_DIR, path)));
   
-        case 7:
+        case 38:
           context$1$0.t0 = context$1$0.sent;
   
-        case 8:
+        case 39:
           if (!context$1$0.t0) {
-            context$1$0.next = 38;
+            context$1$0.next = 68;
             break;
           }
   
           dirName = (0, _path.join)(CONTENT_DIR, path);
-          context$1$0.next = 12;
+          context$1$0.next = 43;
           return regeneratorRuntime.awrap(dirExists(dirName));
   
-        case 12:
+        case 43:
           if (context$1$0.sent) {
-            context$1$0.next = 14;
+            context$1$0.next = 45;
             break;
           }
   
           throw 'no directory \'' + path + '\'';
   
-        case 14:
-          context$1$0.next = 16;
+        case 45:
+          context$1$0.next = 47;
           return regeneratorRuntime.awrap(dirs(path));
   
-        case 16:
+        case 47:
           options = context$1$0.sent;
           fileName = (0, _path.join)(dirName, '/readme.md');
-          context$1$0.next = 20;
-          return regeneratorRuntime.awrap((0, _coreFetch2['default'])('https://api.github.com/repos/gilesbradshaw/rstart/readme'));
+          context$1$0.next = 51;
+          return regeneratorRuntime.awrap((0, _coreFetch2['default'])('https://api.github.com/repos/gilesbradshaw/rstart/readme?client_id=' + _secrets2['default'].GITHUB_CLIENT_ID + '&client_secret=' + _secrets2['default'].GITHUB_CLIENT_SECRET));
   
-        case 20:
+        case 51:
           apiResult = context$1$0.sent;
-          context$1$0.next = 23;
+          context$1$0.next = 54;
           return regeneratorRuntime.awrap(apiResult.json());
   
-        case 23:
+        case 54:
           apiResultContent = context$1$0.sent;
-  
-          console.log(JSON.stringify(apiResultContent));
           ct = new Buffer(apiResultContent.content, 'base64').toString('ascii');
-          context$1$0.next = 28;
+          context$1$0.next = 58;
           return regeneratorRuntime.awrap(fileExists(fileName));
   
-        case 28:
+        case 58:
           if (context$1$0.sent) {
-            context$1$0.next = 32;
+            context$1$0.next = 62;
             break;
           }
   
           res.status(200).send({ options: options, 'content': null, name: names[names.length - 1], path: path });
-          context$1$0.next = 36;
+          context$1$0.next = 66;
           break;
   
-        case 32:
-          context$1$0.next = 34;
+        case 62:
+          context$1$0.next = 64;
           return regeneratorRuntime.awrap(readFile(fileName, { encoding: 'utf8' }));
   
-        case 34:
+        case 64:
           content = context$1$0.sent;
   
           res.status(200).send({ options: options, content: ct, name: names[names.length - 1], path: path });
   
-        case 36:
-          context$1$0.next = 58;
+        case 66:
+          context$1$0.next = 88;
           break;
   
-        case 38:
+        case 68:
           fileName = (0, _path.join)(CONTENT_DIR, (path === '/' ? '/readme' : path) + '.md');
-          context$1$0.next = 41;
+          context$1$0.next = 71;
           return regeneratorRuntime.awrap(fileExists(fileName));
   
-        case 41:
+        case 71:
           if (context$1$0.sent) {
-            context$1$0.next = 43;
+            context$1$0.next = 73;
             break;
           }
   
           fileName = (0, _path.join)(CONTENT_DIR, path + '/readme.md');
   
-        case 43:
+        case 73:
           dirName = path;
   
           if (path.indexOf('/') !== -1) {
@@ -4864,48 +4939,48 @@ module.exports =
           } else {
             dirName = '';
           }
-          context$1$0.next = 47;
+          context$1$0.next = 77;
           return regeneratorRuntime.awrap(dirs(dirName));
   
-        case 47:
+        case 77:
           options = context$1$0.sent;
-          context$1$0.next = 50;
+          context$1$0.next = 80;
           return regeneratorRuntime.awrap(fileExists(fileName));
   
-        case 50:
+        case 80:
           if (context$1$0.sent) {
-            context$1$0.next = 54;
+            context$1$0.next = 84;
             break;
           }
   
           res.status(404).send({ error: 'The page \'' + path + '\' is not found.' });
-          context$1$0.next = 58;
+          context$1$0.next = 88;
           break;
   
-        case 54:
-          context$1$0.next = 56;
+        case 84:
+          context$1$0.next = 86;
           return regeneratorRuntime.awrap(readFile(fileName, { encoding: 'utf8' }));
   
-        case 56:
+        case 86:
           content = context$1$0.sent;
   
           res.status(200).send({ options: options, content: content, name: names[names.length - 1], path: path });
   
-        case 58:
-          context$1$0.next = 63;
+        case 88:
+          context$1$0.next = 93;
           break;
   
-        case 60:
-          context$1$0.prev = 60;
+        case 90:
+          context$1$0.prev = 90;
           context$1$0.t1 = context$1$0['catch'](0);
   
           next(context$1$0.t1);
   
-        case 63:
+        case 93:
         case 'end':
           return context$1$0.stop();
       }
-    }, null, _this, [[0, 60]]);
+    }, null, _this, [[0, 90]]);
   });
   
   exports['default'] = router;

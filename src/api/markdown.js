@@ -54,6 +54,51 @@ router.get('/', async (req, res, next) => {
     const path = req.query.path;
     const names = path.split('/');
 
+    const apiResult1 = await fetch(`https://api.github.com/repos/gilesbradshaw/rstart/contents/src/markdown/${encodeURI(path)}?client_id=${secrets.GITHUB_CLIENT_ID}&client_secret=${secrets.GITHUB_CLIENT_SECRET}`);
+    const apiResultContent1 = await apiResult1.json();
+    console.log(JSON.stringify(apiResultContent1));
+
+    if(Array.isArray(apiResultContent1))
+    {
+      const myOptions = apiResultContent1.filter(r => r.name.toUpperCase()!=='README.MD').map(r =>({
+        name: r.name,
+        path: r.path.substring(13) + (r.type === 'dir' ? '/' : ''),
+        isDirectory: r.type === 'dir',
+      }));
+      const readmeResult1 = await fetch(`https://api.github.com/repos/gilesbradshaw/rstart/contents/src/markdown/${encodeURI(path)}readme.md?client_id=${secrets.GITHUB_CLIENT_ID}&client_secret=${secrets.GITHUB_CLIENT_SECRET}`);
+      const readmeResultContent1 = await readmeResult1.json();
+      if(readmeResultContent1.content)
+      {
+        const readmect = new Buffer(readmeResultContent1.content, 'base64').toString('ascii');
+        console.log('content:' + readmect);
+
+
+        res.status(200).send({ options: myOptions, content: readmect, name: names[names.length - 1], path });
+      } else {
+        res.status(200).send({ options: myOptions, content: 'no readme', name: names[names.length - 1], path });
+      }
+      
+      console.log('IS array!!!' + JSON.stringify(myOptions));
+      return;
+    }
+    else
+    {
+        const dirContents = path.substring(0, path.lastIndexOf('/'));
+        const dirContentsResult = await fetch(`https://api.github.com/repos/gilesbradshaw/rstart/contents/src/markdown/${encodeURI(dirContents)}?client_id=${secrets.GITHUB_CLIENT_ID}&client_secret=${secrets.GITHUB_CLIENT_SECRET}`);
+        const dirContentsContent = await dirContentsResult.json();
+        const dirContentsOptions = dirContentsContent.filter(r => r.name.toUpperCase()!=='README.MD').map(r =>({
+            name: r.name,
+            path: r.path.substring(13) + (r.type === 'dir' ? '/' : ''),
+            isDirectory: r.type === 'dir',
+          }));
+      res.status(200).send({ options: dirContentsOptions, content:  new Buffer(apiResultContent1.content, 'base64').toString('ascii') , name: names[names.length - 1], path });
+      return;
+      console.log('IS NOT array!!!'); 
+    }
+      
+
+
+
     if (!path || await dirExists(join(CONTENT_DIR, path))) {
       const dirName = join(CONTENT_DIR, path);
 
@@ -62,9 +107,8 @@ router.get('/', async (req, res, next) => {
       }
       const options = await dirs(path);    
       const fileName = join(dirName, '/readme.md');
-      const apiResult = await fetch('https://api.github.com/repos/gilesbradshaw/rstart/readme');
+      const apiResult = await fetch(`https://api.github.com/repos/gilesbradshaw/rstart/readme?client_id=${secrets.GITHUB_CLIENT_ID}&client_secret=${secrets.GITHUB_CLIENT_SECRET}`);
       const apiResultContent = await apiResult.json();
-      console.log(JSON.stringify(apiResultContent));
       const ct = new Buffer(apiResultContent.content, 'base64').toString('ascii');
       if (!(await fileExists(fileName))) {
         res.status(200).send({ options, 'content': null, name: names[names.length - 1], path });
