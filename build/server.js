@@ -97,7 +97,7 @@ module.exports =
   
   var _iso2 = _interopRequireDefault(_iso);
   
-  var _alt = __webpack_require__(44);
+  var _alt = __webpack_require__(38);
   
   var _alt2 = _interopRequireDefault(_alt);
   
@@ -126,6 +126,10 @@ module.exports =
   var _secrets = __webpack_require__(84);
   
   var _secrets2 = _interopRequireDefault(_secrets);
+  
+  var _coreFetch = __webpack_require__(12);
+  
+  var _coreFetch2 = _interopRequireDefault(_coreFetch);
   
   var server = global.server = (0, _express2['default'])();
   
@@ -225,6 +229,10 @@ module.exports =
   //
   // Register server-side rendering middleware
   // -----------------------------------------------------------------------------
+  
+  server.get('/', function (req, res) {
+    res.redirect('/markdown');
+  });
   server.get('*', function callee$0$0(req, res, next) {
     return regeneratorRuntime.async(function callee$0$0$(context$1$0) {
       var _this = this;
@@ -260,7 +268,7 @@ module.exports =
                     },
                     user: req.user
                   };
-                  altData = { MarkdownStore: { markdown: 'booooo' }, UserStore: { user: req.user ? req.user.displayName : '?&&&&&&?' }, ProductStore: { products: [1, 2, 3] } };
+                  altData = { MarkdownStore: { pages: {} }, UserStore: { user: req.user ? req.user.displayName : '?&&&&&&?' }, ProductStore: { products: [1, 2, 3] } };
   
                   _alt2['default'].bootstrap(JSON.stringify(altData));
   
@@ -273,7 +281,7 @@ module.exports =
                 case 8:
                   html = _reactDomServer2['default'].renderToStaticMarkup(_react2['default'].createElement(_componentsHtml2['default'], data));
   
-                  res.status(statusCode).send(req.user + '<!doctype html>\n ' + html);
+                  res.status(statusCode).send('<!doctype html>\n ' + html);
   
                 case 10:
                 case 'end':
@@ -306,6 +314,9 @@ module.exports =
     /* eslint-disable no-console */
     console.log('The server is running at http://localhost:' + _config.port + '/');
   });
+  
+  //const response = await fetch(`/api/markdown?path=`);
+  //const content = await response.json();
 
 /***/ },
 /* 1 */
@@ -467,46 +478,32 @@ module.exports =
       }, null, _this);
     });
     on('/markdown', function callee$1$0() {
-      var response, content;
+      var content;
       return regeneratorRuntime.async(function callee$1$0$(context$2$0) {
         while (1) switch (context$2$0.prev = context$2$0.next) {
           case 0:
-            context$2$0.next = 2;
-            return regeneratorRuntime.awrap((0, _coreFetch2['default'])('/api/markdown?path='));
+            content = {
+              path: ""
+            };
+            return context$2$0.abrupt('return', _react2['default'].createElement(_componentsMarkdownPage2['default'], content));
   
           case 2:
-            response = context$2$0.sent;
-            context$2$0.next = 5;
-            return regeneratorRuntime.awrap(response.json());
-  
-          case 5:
-            content = context$2$0.sent;
-            return context$2$0.abrupt('return', response && _react2['default'].createElement(_componentsMarkdownPage2['default'], content));
-  
-          case 7:
           case 'end':
             return context$2$0.stop();
         }
       }, null, _this);
     });
     on('/markdown/*', function callee$1$0(state) {
-      var response, content;
+      var content;
       return regeneratorRuntime.async(function callee$1$0$(context$2$0) {
         while (1) switch (context$2$0.prev = context$2$0.next) {
           case 0:
-            context$2$0.next = 2;
-            return regeneratorRuntime.awrap((0, _coreFetch2['default'])('/api/markdown?path=' + state.path.slice(10)));
+            content = {
+              path: decodeURIComponent(state.path.slice(10))
+            };
+            return context$2$0.abrupt('return', _react2['default'].createElement(_componentsMarkdownPage2['default'], content));
   
           case 2:
-            response = context$2$0.sent;
-            context$2$0.next = 5;
-            return regeneratorRuntime.awrap(response.json());
-  
-          case 5:
-            content = context$2$0.sent;
-            return context$2$0.abrupt('return', response && _react2['default'].createElement(_componentsMarkdownPage2['default'], content));
-  
-          case 7:
           case 'end':
             return context$2$0.stop();
         }
@@ -552,6 +549,9 @@ module.exports =
   
   exports['default'] = router;
   module.exports = exports['default'];
+
+  // const response = await fetch(`/api/markdown?path=${state.path.slice(10)}`);
+  // const content = await response.json();
 
 /***/ },
 /* 7 */
@@ -1422,6 +1422,7 @@ module.exports =
   }
   
   function localFetch(url, options) {
+    console.log('serve fetch ' + localUrl(url));
     return (0, _nodeFetch2['default'])(localUrl(url), options);
   }
   
@@ -1506,27 +1507,27 @@ module.exports =
   
   var _Header2 = _interopRequireDefault(_Header);
   
-  var _Feedback = __webpack_require__(37);
+  var _Feedback = __webpack_require__(43);
   
   var _Feedback2 = _interopRequireDefault(_Feedback);
   
-  var _Footer = __webpack_require__(40);
+  var _Footer = __webpack_require__(46);
   
   var _Footer2 = _interopRequireDefault(_Footer);
   
-  var _storesProductStore = __webpack_require__(43);
+  var _storesProductStore = __webpack_require__(49);
   
   var _storesProductStore2 = _interopRequireDefault(_storesProductStore);
   
-  var _storesUserStore = __webpack_require__(48);
+  var _storesUserStore = __webpack_require__(37);
   
   var _storesUserStore2 = _interopRequireDefault(_storesUserStore);
   
-  var _actionsActionCreators = __webpack_require__(46);
+  var _actionsActionCreators = __webpack_require__(40);
   
   var _actionsActionCreators2 = _interopRequireDefault(_actionsActionCreators);
   
-  var _altUtilsLibConnectToStores = __webpack_require__(49);
+  var _altUtilsLibConnectToStores = __webpack_require__(36);
   
   var _altUtilsLibConnectToStores2 = _interopRequireDefault(_altUtilsLibConnectToStores);
   
@@ -1544,27 +1545,67 @@ module.exports =
   var App = (function (_Component) {
     _inherits(App, _Component);
   
-    _createClass(App, null, [{
+    function App() {
+      _classCallCheck(this, _App);
+  
+      _get(Object.getPrototypeOf(_App.prototype), 'constructor', this).apply(this, arguments);
+    }
+  
+    _createClass(App, [{
+      key: 'getChildContext',
+      value: function getChildContext() {
+        var context = this.props.context;
+        return {
+          insertCss: context.insertCss || _fbjsLibEmptyFunction2['default'],
+          onSetTitle: context.onSetTitle || _fbjsLibEmptyFunction2['default'],
+          onSetMeta: context.onSetMeta || _fbjsLibEmptyFunction2['default'],
+          onPageNotFound: context.onPageNotFound || _fbjsLibEmptyFunction2['default']
+        };
+      }
+    }, {
+      key: 'componentWillMount',
+      value: function componentWillMount() {
+        this.removeCss = this.props.context.insertCss(_AppScss2['default']);
+      }
+    }, {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        this.removeCss();
+      }
+    }, {
+      key: 'changeProducts',
+      value: function changeProducts() {
+        _actionsActionCreators2['default'].receiveProducts([5, 6, 7, 8]);
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        return !this.props.error ? _react2['default'].createElement(
+          'div',
+          null,
+          _react2['default'].createElement(_Header2['default'], this.props),
+          this.props.children,
+          _react2['default'].createElement(_Feedback2['default'], null),
+          _react2['default'].createElement(_Footer2['default'], null)
+        ) : this.props.children;
+      }
+    }], [{
       key: 'getStores',
       value: function getStores(props) {
-        return [_storesMarkdownStore2['default'], _storesProductStore2['default'], _storesUserStore2['default']];
+        return [_storesProductStore2['default'], _storesUserStore2['default']];
       }
     }, {
       key: 'getPropsFromStores',
       value: function getPropsFromStores(props) {
-        console.log("getting popos");
         return {
           product: _storesProductStore2['default'].getState(),
-          user: _storesUserStore2['default'].getState(),
-          markdown: _storesMarkdownStore2['default'].getState()
+          user: _storesUserStore2['default'].getState()
+  
         };
       }
     }, {
       key: 'componentDidConnect',
-      value: function componentDidConnect() {
-        console.log("fetching by id");
-        _storesMarkdownStore2['default'].fetchById();
-      }
+      value: function componentDidConnect() {}
     }, {
       key: 'propTypes',
       value: {
@@ -1588,89 +1629,6 @@ module.exports =
         onPageNotFound: _react.PropTypes.func.isRequired
       },
       enumerable: true
-    }]);
-  
-    function App() {
-      _classCallCheck(this, _App);
-  
-      _get(Object.getPrototypeOf(_App.prototype), 'constructor', this).call(this);
-      //this.state = _getStateFromStores();
-      //this._onChange = this._onChange.bind(this);
-    }
-  
-    _createClass(App, [{
-      key: 'getChildContext',
-      value: function getChildContext() {
-        var context = this.props.context;
-        return {
-          insertCss: context.insertCss || _fbjsLibEmptyFunction2['default'],
-          onSetTitle: context.onSetTitle || _fbjsLibEmptyFunction2['default'],
-          onSetMeta: context.onSetMeta || _fbjsLibEmptyFunction2['default'],
-          onPageNotFound: context.onPageNotFound || _fbjsLibEmptyFunction2['default']
-        };
-      }
-    }, {
-      key: 'componentWillMount',
-      value: function componentWillMount() {
-        this.removeCss = this.props.context.insertCss(_AppScss2['default']);
-      }
-    }, {
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        //console.log("fetching by id!!");
-        //MarkdownStore.fetchById();
-        //ProductStore.listen(this._onChange);
-      }
-    }, {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
-        //ProductStore.unlisten(this._onChange);
-        this.removeCss();
-      }
-    }, {
-      key: 'changeProducts',
-      value: function changeProducts() {
-        _actionsActionCreators2['default'].receiveProducts([5, 6, 7, 8]);
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        return !this.props.error ? _react2['default'].createElement(
-          'div',
-          null,
-          _react2['default'].createElement(
-            'span',
-            null,
-            this.props.user.user
-          ),
-          _react2['default'].createElement(
-            'span',
-            null,
-            this.props.markdown.markdown
-          ),
-          _react2['default'].createElement(
-            'button',
-            { className: 'uk-button uk-button-small uk-button-primary',
-              onClick: this.changeProducts },
-            'clickme'
-          ),
-          _react2['default'].createElement(
-            'ul',
-            null,
-            this.props.product.products.map(function (p) {
-              return _react2['default'].createElement(
-                'li',
-                { key: p },
-                p
-              );
-            })
-          ),
-          _react2['default'].createElement(_Header2['default'], null),
-          this.props.children,
-          _react2['default'].createElement(_Feedback2['default'], null),
-          _react2['default'].createElement(_Footer2['default'], null)
-        ) : this.props.children;
-      }
     }]);
   
     var _App = App;
@@ -2009,6 +1967,14 @@ module.exports =
   
   var _Navigation2 = _interopRequireDefault(_Navigation);
   
+  var _altUtilsLibConnectToStores = __webpack_require__(36);
+  
+  var _altUtilsLibConnectToStores2 = _interopRequireDefault(_altUtilsLibConnectToStores);
+  
+  var _storesUserStore = __webpack_require__(37);
+  
+  var _storesUserStore2 = _interopRequireDefault(_storesUserStore);
+  
   var Header = (function (_Component) {
     _inherits(Header, _Component);
   
@@ -2024,41 +1990,44 @@ module.exports =
         return _react2['default'].createElement(
           'div',
           { className: _HeaderScss2['default'].root },
-          'wdwdwd',
+          _react2['default'].createElement(
+            'span',
+            null,
+            this.props.user.user
+          ),
           _react2['default'].createElement(
             'div',
             { className: _HeaderScss2['default'].container },
             _react2['default'].createElement(_Navigation2['default'], { className: _HeaderScss2['default'].nav }),
             _react2['default'].createElement(
               'a',
-              { className: _HeaderScss2['default'].brand, href: '/', onClick: _Link2['default'].handleClick },
-              _react2['default'].createElement('img', { src: __webpack_require__(36), width: '38', height: '38', alt: 'React' }),
+              { className: _HeaderScss2['default'].brand, href: '/markdown', onClick: _Link2['default'].handleClick },
+              _react2['default'].createElement('img', { src: __webpack_require__(42), width: '38', height: '38', alt: 'React' }),
               _react2['default'].createElement(
                 'span',
                 { className: _HeaderScss2['default'].brandTxt },
                 'SiGyl'
               )
-            ),
-            _react2['default'].createElement(
-              'div',
-              { className: _HeaderScss2['default'].banner },
-              _react2['default'].createElement(
-                'h1',
-                { className: _HeaderScss2['default'].bannerTitle },
-                'React'
-              ),
-              _react2['default'].createElement(
-                'p',
-                { className: _HeaderScss2['default'].bannerDesc },
-                'Complex web apps made easy'
-              )
             )
           )
         );
       }
+    }], [{
+      key: 'getStores',
+      value: function getStores(props) {
+        return [_storesUserStore2['default']];
+      }
+    }, {
+      key: 'getPropsFromStores',
+      value: function getPropsFromStores(props) {
+        return {
+          user: _storesUserStore2['default'].getState()
+        };
+      }
     }]);
   
     var _Header = Header;
+    Header = (0, _altUtilsLibConnectToStores2['default'])(Header) || Header;
     Header = (0, _decoratorsWithStyles2['default'])(_HeaderScss2['default'])(Header) || Header;
     return Header;
   })(_react.Component);
@@ -2571,10 +2540,123 @@ module.exports =
 /* 36 */
 /***/ function(module, exports) {
 
-  module.exports = "data:image/png;base64,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"
+  module.exports = require("alt-utils/lib/connectToStores");
 
 /***/ },
 /* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  
+  var _alt = __webpack_require__(38);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _actionsActionCreators = __webpack_require__(40);
+  
+  var _actionsActionCreators2 = _interopRequireDefault(_actionsActionCreators);
+  
+  var UserStore = function UserStore() {
+    _classCallCheck(this, UserStore);
+  
+    this.bindActions(_actionsActionCreators2['default']);
+    this.user = undefined;
+  };
+  
+  exports['default'] = _alt2['default'].createStore(UserStore, 'UserStore');
+  module.exports = exports['default'];
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  var _alt = __webpack_require__(39);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  exports['default'] = new _alt2['default']();
+  module.exports = exports['default'];
+
+/***/ },
+/* 39 */
+/***/ function(module, exports) {
+
+  module.exports = require("alt");
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, '__esModule', {
+    value: true
+  });
+  
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  
+  var _alt = __webpack_require__(38);
+  
+  var _alt2 = _interopRequireDefault(_alt);
+  
+  var _altUtilsLibDecorators = __webpack_require__(41);
+  
+  var ActionsCreators = (function () {
+    function ActionsCreators() {
+      _classCallCheck(this, _ActionsCreators);
+  
+      this.generateActions('receiveProducts', 'addToCart', 'finishCheckout');
+    }
+  
+    _createClass(ActionsCreators, [{
+      key: 'cartCheckout',
+      value: function cartCheckout(products) {
+        this.dispatch(products);
+      }
+    }]);
+  
+    var _ActionsCreators = ActionsCreators;
+    ActionsCreators = (0, _altUtilsLibDecorators.createActions)(_alt2['default'])(ActionsCreators) || ActionsCreators;
+    return ActionsCreators;
+  })();
+  
+  exports['default'] = ActionsCreators;
+  module.exports = exports['default'];
+
+/***/ },
+/* 41 */
+/***/ function(module, exports) {
+
+  module.exports = require("alt-utils/lib/decorators");
+
+/***/ },
+/* 42 */
+/***/ function(module, exports) {
+
+  module.exports = "data:image/png;base64,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"
+
+/***/ },
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -2606,7 +2688,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _FeedbackScss = __webpack_require__(38);
+  var _FeedbackScss = __webpack_require__(44);
   
   var _FeedbackScss2 = _interopRequireDefault(_FeedbackScss);
   
@@ -2661,11 +2743,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 38 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(39);
+      var content = __webpack_require__(45);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -2693,7 +2775,7 @@ module.exports =
     
 
 /***/ },
-/* 39 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -2712,7 +2794,7 @@ module.exports =
   };
 
 /***/ },
-/* 40 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
   /**
@@ -2744,7 +2826,7 @@ module.exports =
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _FooterScss = __webpack_require__(41);
+  var _FooterScss = __webpack_require__(47);
   
   var _FooterScss2 = _interopRequireDefault(_FooterScss);
   
@@ -2823,11 +2905,11 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 41 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(42);
+      var content = __webpack_require__(48);
       var insertCss = __webpack_require__(20);
   
       if (typeof content === 'string') {
@@ -2855,7 +2937,7 @@ module.exports =
     
 
 /***/ },
-/* 42 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
   exports = module.exports = __webpack_require__(19)();
@@ -2876,7 +2958,7 @@ module.exports =
   };
 
 /***/ },
-/* 43 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -2891,11 +2973,11 @@ module.exports =
   
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
   
-  var _alt = __webpack_require__(44);
+  var _alt = __webpack_require__(38);
   
   var _alt2 = _interopRequireDefault(_alt);
   
-  var _actionsActionCreators = __webpack_require__(46);
+  var _actionsActionCreators = __webpack_require__(40);
   
   var _actionsActionCreators2 = _interopRequireDefault(_actionsActionCreators);
   
@@ -2931,119 +3013,6 @@ module.exports =
   module.exports = exports['default'];
 
 /***/ },
-/* 44 */
-/***/ function(module, exports, __webpack_require__) {
-
-  'use strict';
-  
-  Object.defineProperty(exports, '__esModule', {
-    value: true
-  });
-  
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-  
-  var _alt = __webpack_require__(45);
-  
-  var _alt2 = _interopRequireDefault(_alt);
-  
-  exports['default'] = new _alt2['default']();
-  module.exports = exports['default'];
-
-/***/ },
-/* 45 */
-/***/ function(module, exports) {
-
-  module.exports = require("alt");
-
-/***/ },
-/* 46 */
-/***/ function(module, exports, __webpack_require__) {
-
-  'use strict';
-  
-  Object.defineProperty(exports, '__esModule', {
-    value: true
-  });
-  
-  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-  
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-  
-  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-  
-  var _alt = __webpack_require__(44);
-  
-  var _alt2 = _interopRequireDefault(_alt);
-  
-  var _altUtilsLibDecorators = __webpack_require__(47);
-  
-  var ActionsCreators = (function () {
-    function ActionsCreators() {
-      _classCallCheck(this, _ActionsCreators);
-  
-      this.generateActions('receiveProducts', 'addToCart', 'finishCheckout');
-    }
-  
-    _createClass(ActionsCreators, [{
-      key: 'cartCheckout',
-      value: function cartCheckout(products) {
-        this.dispatch(products);
-      }
-    }]);
-  
-    var _ActionsCreators = ActionsCreators;
-    ActionsCreators = (0, _altUtilsLibDecorators.createActions)(_alt2['default'])(ActionsCreators) || ActionsCreators;
-    return ActionsCreators;
-  })();
-  
-  exports['default'] = ActionsCreators;
-  module.exports = exports['default'];
-
-/***/ },
-/* 47 */
-/***/ function(module, exports) {
-
-  module.exports = require("alt-utils/lib/decorators");
-
-/***/ },
-/* 48 */
-/***/ function(module, exports, __webpack_require__) {
-
-  'use strict';
-  
-  Object.defineProperty(exports, '__esModule', {
-    value: true
-  });
-  
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-  
-  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-  
-  var _alt = __webpack_require__(44);
-  
-  var _alt2 = _interopRequireDefault(_alt);
-  
-  var _actionsActionCreators = __webpack_require__(46);
-  
-  var _actionsActionCreators2 = _interopRequireDefault(_actionsActionCreators);
-  
-  var UserStore = function UserStore() {
-    _classCallCheck(this, UserStore);
-  
-    this.bindActions(_actionsActionCreators2['default']);
-    this.user = undefined;
-  };
-  
-  exports['default'] = _alt2['default'].createStore(UserStore, 'UserStore');
-  module.exports = exports['default'];
-
-/***/ },
-/* 49 */
-/***/ function(module, exports) {
-
-  module.exports = require("alt-utils/lib/connectToStores");
-
-/***/ },
 /* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -3059,7 +3028,7 @@ module.exports =
   
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
   
-  var _alt = __webpack_require__(44);
+  var _alt = __webpack_require__(38);
   
   var _alt2 = _interopRequireDefault(_alt);
   
@@ -3071,23 +3040,19 @@ module.exports =
   
   var _actionsMarkdownActions2 = _interopRequireDefault(_actionsMarkdownActions);
   
-  var _altUtilsLibDecorators = __webpack_require__(47);
+  var _altUtilsLibDecorators = __webpack_require__(41);
   
   var MarkdownStore = (function () {
     function MarkdownStore() {
       _classCallCheck(this, _MarkdownStore);
   
       this.bindActions(_actionsMarkdownActions2['default']);
-      this.state = {
-        markdown: 'blahhhhhh'
-      };
     }
   
     _createClass(MarkdownStore, [{
       key: 'onFetched',
-      value: function onFetched(ummm) {
-        console.log("FETCHEDDDDD");
-        this.setState(ummm);
+      value: function onFetched(state) {
+        this.pages[state.path] = state;
       }
     }]);
   
@@ -3112,7 +3077,7 @@ module.exports =
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
   
-  var _alt = __webpack_require__(44);
+  var _alt = __webpack_require__(38);
   
   var _alt2 = _interopRequireDefault(_alt);
   
@@ -3120,26 +3085,49 @@ module.exports =
   
   var _actionsMarkdownActions2 = _interopRequireDefault(_actionsMarkdownActions);
   
+  var _coreFetch = __webpack_require__(12);
+  
+  var _coreFetch2 = _interopRequireDefault(_coreFetch);
+  
+  var data = {};
+  
   var MarkdownSource = {
     fetchById: {
       local: function local(state, id) {
-        return undefined; // will return `undefined` if there
+        return data[id]; // will return `undefined` if there
         // is no todo at that id
       },
       // `remote` is called if the return value of local == undefined
       // It will receive the same parameters as local would but should
       // return a promise.
       remote: function remote(state, id) {
-        return new Promise(function (resolve, reject) {
-          return setTimeout(function () {
-            resolve({ markdown: 'hahhh' });
-            console.log("resolving...");
-          }, 4000);
+        var _this = this;
+  
+        return new Promise(function callee$1$0(resolve, reject) {
+          var response, content;
+          return regeneratorRuntime.async(function callee$1$0$(context$2$0) {
+            while (1) switch (context$2$0.prev = context$2$0.next) {
+              case 0:
+                context$2$0.next = 2;
+                return regeneratorRuntime.awrap((0, _coreFetch2['default'])('/api/markdown?path=' + id));
+  
+              case 2:
+                response = context$2$0.sent;
+                context$2$0.next = 5;
+                return regeneratorRuntime.awrap(response.json());
+  
+              case 5:
+                content = context$2$0.sent;
+  
+                data[id] = { path: content.path, markdown: content.content, options: content.options };
+                resolve(data[id]);
+  
+              case 8:
+              case 'end':
+                return context$2$0.stop();
+            }
+          }, null, _this);
         });
-      },
-      shouldFetch: function shouldFetch(state, args) {
-        console.log('shopuld');
-        return true;
       },
   
       // loading specifies an optional action to fire once `remote`
@@ -3179,11 +3167,11 @@ module.exports =
   
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
   
-  var _alt = __webpack_require__(44);
+  var _alt = __webpack_require__(38);
   
   var _alt2 = _interopRequireDefault(_alt);
   
-  var _altUtilsLibDecorators = __webpack_require__(47);
+  var _altUtilsLibDecorators = __webpack_require__(41);
   
   var MarkdownActions = (function () {
     function MarkdownActions() {
@@ -3193,7 +3181,7 @@ module.exports =
     _createClass(MarkdownActions, [{
       key: 'fetched',
       value: function fetched(payload) {
-        return payload;
+        //return payload;
         return function (dispatch) {
           console.log("displatchunbg" + payload.markdown); //
           return dispatch(payload);
@@ -3408,6 +3396,14 @@ module.exports =
   
   var _Link2 = _interopRequireDefault(_Link);
   
+  var _altUtilsLibConnectToStores = __webpack_require__(36);
+  
+  var _altUtilsLibConnectToStores2 = _interopRequireDefault(_altUtilsLibConnectToStores);
+  
+  var _storesMarkdownStore = __webpack_require__(50);
+  
+  var _storesMarkdownStore2 = _interopRequireDefault(_storesMarkdownStore);
+  
   var MarkdownPage = (function (_Component) {
     _inherits(MarkdownPage, _Component);
   
@@ -3418,67 +3414,109 @@ module.exports =
     }
   
     _createClass(MarkdownPage, [{
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(nextProps) {
+        if (this.props.path !== nextProps.path) _storesMarkdownStore2['default'].fetchById(nextProps.path);
+      }
+    }, {
       key: 'render',
       value: function render() {
         var _this = this;
   
         // this.context.onSetTitle(this.props.title);
-        var links = this.props.path.split('/').reduce(function (prev, current) {
-          return prev.concat([{ name: current, href: prev[prev.length - 1].href + '/' + current }]);
-        }, [{ name: 'root', href: '' }]);
-        return _react2['default'].createElement(
-          'div',
-          { className: _MarkdownPageScss2['default'].root },
-          _react2['default'].createElement(
+        if (this.props.markdown && this.props.markdown.pages[this.props.path]) {
+          var links = this.props.path.split('/').reduce(function (prev, current) {
+            return prev.concat([{ name: current, href: prev[prev.length - 1].href + '/' + current }]);
+          }, [{ name: '\\', href: '' }]);
+          return _react2['default'].createElement(
             'div',
-            { className: _MarkdownPageScss2['default'].container },
+            { className: _MarkdownPageScss2['default'].root },
             _react2['default'].createElement(
-              'ul',
-              { className: 'nav nav-pills', role: 'pilllist' },
-              links.map(function (l) {
-                return _react2['default'].createElement(
-                  'li',
-                  { key: l.path, role: 'presentation', className: l.href === '/' + _this.props.path ? 'active' : '' },
-                  _react2['default'].createElement(
-                    'a',
-                    { className: _MarkdownPageScss2['default'].brand, href: '/markdown' + l.href, onClick: _Link2['default'].handleClick },
+              'div',
+              { className: _MarkdownPageScss2['default'].container },
+              _react2['default'].createElement(
+                'ul',
+                { className: 'nav nav-pills', role: 'pilllist' },
+                links.filter(function (l) {
+                  return l.name.trim() !== "";
+                }).map(function (l) {
+                  return _react2['default'].createElement(
+                    'li',
+                    { key: l.path, role: 'presentation' },
                     _react2['default'].createElement(
-                      'span',
-                      { className: _MarkdownPageScss2['default'].brandTxt },
-                      l.name
+                      'a',
+                      { className: _MarkdownPageScss2['default'].brand, href: '/markdown' + l.href, onClick: _Link2['default'].handleClick },
+                      _react2['default'].createElement(
+                        'span',
+                        { className: _MarkdownPageScss2['default'].brandTxt },
+                        l.name
+                      )
                     )
-                  )
-                );
-              })
-            ),
+                  );
+                })
+              ),
+              this.props.markdown.pages[this.props.path] ? _react2['default'].createElement(
+                'div',
+                null,
+                _react2['default'].createElement(
+                  'ul',
+                  { className: 'nav nav-pills', role: 'tablist' },
+                  this.props.markdown.pages[this.props.path].options.map(function (o) {
+                    return _react2['default'].createElement(
+                      'li',
+                      { key: o.name, role: 'presentation', className: o.path.replace(/\\/g, '/') === _this.props.path ? 'active' : '' },
+                      _react2['default'].createElement(
+                        'a',
+                        { className: _MarkdownPageScss2['default'].brand, href: '/markdown/' + o.path, onClick: _Link2['default'].handleClick },
+                        _react2['default'].createElement(
+                          'span',
+                          { className: _MarkdownPageScss2['default'].brandTxt },
+                          o.name
+                        )
+                      )
+                    );
+                  })
+                ),
+                _react2['default'].createElement(_reactRemarkable2['default'], { source: this.props.markdown.pages[this.props.path].markdown || '' })
+              ) : undefined
+            )
+          );
+        } else {
+          return _react2['default'].createElement(
+            'div',
+            null,
+            ' ',
             _react2['default'].createElement(
-              'ul',
-              { className: 'nav nav-pills', role: 'tablist' },
-              this.props.options.map(function (o) {
-                return _react2['default'].createElement(
-                  'li',
-                  { key: o.name, role: 'presentation', className: o.path.replace(/\\/g, '/') === _this.props.path ? 'active' : '' },
-                  _react2['default'].createElement(
-                    'a',
-                    { className: _MarkdownPageScss2['default'].brand, href: '/markdown/' + o.path, onClick: _Link2['default'].handleClick },
-                    _react2['default'].createElement(
-                      'span',
-                      { className: _MarkdownPageScss2['default'].brandTxt },
-                      o.name
-                    )
-                  )
-                );
-              })
-            ),
-            _react2['default'].createElement(_reactRemarkable2['default'], { source: this.props.content || '' })
-          )
-        );
+              'h1',
+              null,
+              'loading'
+            )
+          );
+        }
       }
     }], [{
+      key: 'getStores',
+      value: function getStores(props) {
+        return [_storesMarkdownStore2['default']];
+      }
+    }, {
+      key: 'getPropsFromStores',
+      value: function getPropsFromStores(props) {
+        var aaa = _storesMarkdownStore2['default'].getState();
+        return {
+          markdown: _storesMarkdownStore2['default'].getState()
+        };
+      }
+    }, {
+      key: 'componentDidConnect',
+      value: function componentDidConnect(props) {
+        _storesMarkdownStore2['default'].fetchById(props.path);
+      }
+    }, {
       key: 'propTypes',
       value: {
-        // path: PropTypes.string.isRequired,
-        content: _react.PropTypes.string.isRequired
+        path: _react.PropTypes.string.isRequired,
+        pages: _react.PropTypes.object.isRequired
       },
       enumerable: true
     }, {
@@ -3491,6 +3529,7 @@ module.exports =
     }]);
   
     var _MarkdownPage = MarkdownPage;
+    MarkdownPage = (0, _altUtilsLibConnectToStores2['default'])(MarkdownPage) || MarkdownPage;
     MarkdownPage = (0, _decoratorsWithStyles2['default'])(_MarkdownPageScss2['default'])(MarkdownPage) || MarkdownPage;
     return MarkdownPage;
   })(_react.Component);
@@ -4635,6 +4674,14 @@ module.exports =
   
   var _bluebird2 = _interopRequireDefault(_bluebird);
   
+  var _secrets = __webpack_require__(84);
+  
+  var _secrets2 = _interopRequireDefault(_secrets);
+  
+  var _coreFetch = __webpack_require__(12);
+  
+  var _coreFetch2 = _interopRequireDefault(_coreFetch);
+  
   // A folder with Jade/Markdown/HTML content pages
   var CONTENT_DIR = (0, _path.join)(__dirname, './markdown');
   var readFile = _bluebird2['default'].promisify(_fs2['default'].readFile);
@@ -4712,7 +4759,7 @@ module.exports =
   }
   
   router.get('/', function callee$0$0(req, res, next) {
-    var path, names, dirName, options, fileName, content;
+    var path, names, dirName, options, fileName, apiResult, apiResultContent, ct, content;
     return regeneratorRuntime.async(function callee$0$0$(context$1$0) {
       while (1) switch (context$1$0.prev = context$1$0.next) {
         case 0:
@@ -4734,7 +4781,7 @@ module.exports =
   
         case 8:
           if (!context$1$0.t0) {
-            context$1$0.next = 30;
+            context$1$0.next = 38;
             break;
           }
   
@@ -4758,45 +4805,58 @@ module.exports =
           options = context$1$0.sent;
           fileName = (0, _path.join)(dirName, '/readme.md');
           context$1$0.next = 20;
-          return regeneratorRuntime.awrap(fileExists(fileName));
+          return regeneratorRuntime.awrap((0, _coreFetch2['default'])('https://api.github.com/repos/gilesbradshaw/rstart/readme'));
   
         case 20:
+          apiResult = context$1$0.sent;
+          context$1$0.next = 23;
+          return regeneratorRuntime.awrap(apiResult.json());
+  
+        case 23:
+          apiResultContent = context$1$0.sent;
+  
+          console.log(JSON.stringify(apiResultContent));
+          ct = new Buffer(apiResultContent.content, 'base64').toString('ascii');
+          context$1$0.next = 28;
+          return regeneratorRuntime.awrap(fileExists(fileName));
+  
+        case 28:
           if (context$1$0.sent) {
-            context$1$0.next = 24;
+            context$1$0.next = 32;
             break;
           }
   
           res.status(200).send({ options: options, 'content': null, name: names[names.length - 1], path: path });
-          context$1$0.next = 28;
+          context$1$0.next = 36;
           break;
   
-        case 24:
-          context$1$0.next = 26;
+        case 32:
+          context$1$0.next = 34;
           return regeneratorRuntime.awrap(readFile(fileName, { encoding: 'utf8' }));
   
-        case 26:
+        case 34:
           content = context$1$0.sent;
   
-          res.status(200).send({ options: options, content: content, name: names[names.length - 1], path: path });
+          res.status(200).send({ options: options, content: ct, name: names[names.length - 1], path: path });
   
-        case 28:
-          context$1$0.next = 50;
+        case 36:
+          context$1$0.next = 58;
           break;
   
-        case 30:
+        case 38:
           fileName = (0, _path.join)(CONTENT_DIR, (path === '/' ? '/readme' : path) + '.md');
-          context$1$0.next = 33;
+          context$1$0.next = 41;
           return regeneratorRuntime.awrap(fileExists(fileName));
   
-        case 33:
+        case 41:
           if (context$1$0.sent) {
-            context$1$0.next = 35;
+            context$1$0.next = 43;
             break;
           }
   
           fileName = (0, _path.join)(CONTENT_DIR, path + '/readme.md');
   
-        case 35:
+        case 43:
           dirName = path;
   
           if (path.indexOf('/') !== -1) {
@@ -4804,48 +4864,48 @@ module.exports =
           } else {
             dirName = '';
           }
-          context$1$0.next = 39;
+          context$1$0.next = 47;
           return regeneratorRuntime.awrap(dirs(dirName));
   
-        case 39:
+        case 47:
           options = context$1$0.sent;
-          context$1$0.next = 42;
+          context$1$0.next = 50;
           return regeneratorRuntime.awrap(fileExists(fileName));
   
-        case 42:
+        case 50:
           if (context$1$0.sent) {
-            context$1$0.next = 46;
+            context$1$0.next = 54;
             break;
           }
   
           res.status(404).send({ error: 'The page \'' + path + '\' is not found.' });
-          context$1$0.next = 50;
+          context$1$0.next = 58;
           break;
   
-        case 46:
-          context$1$0.next = 48;
+        case 54:
+          context$1$0.next = 56;
           return regeneratorRuntime.awrap(readFile(fileName, { encoding: 'utf8' }));
   
-        case 48:
+        case 56:
           content = context$1$0.sent;
   
           res.status(200).send({ options: options, content: content, name: names[names.length - 1], path: path });
   
-        case 50:
-          context$1$0.next = 55;
+        case 58:
+          context$1$0.next = 63;
           break;
   
-        case 52:
-          context$1$0.prev = 52;
+        case 60:
+          context$1$0.prev = 60;
           context$1$0.t1 = context$1$0['catch'](0);
   
           next(context$1$0.t1);
   
-        case 55:
+        case 63:
         case 'end':
           return context$1$0.stop();
       }
-    }, null, _this, [[0, 52]]);
+    }, null, _this, [[0, 60]]);
   });
   
   exports['default'] = router;

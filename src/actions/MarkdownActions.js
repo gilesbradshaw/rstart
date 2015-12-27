@@ -7,7 +7,7 @@ class MarkdownActions {
    
   }
   fetched(payload) {
-    return payload;
+    //return payload;
     return (dispatch) => {
         console.log("displatchunbg" + payload.markdown);//
         return dispatch(payload);

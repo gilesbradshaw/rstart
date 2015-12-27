@@ -31,14 +31,13 @@ function _getStateFromStores(){
 class App extends Component {
 
   static getStores(props) {
-     return [MarkdownStore, ProductStore, UserStore]
+     return [ProductStore, UserStore]
   }
   static getPropsFromStores(props) {
-    console.log("getting popos");
     return {
       product: ProductStore.getState(),
       user: UserStore.getState(),
-      markdown: MarkdownStore.getState()
+      
     };
   }
   static propTypes = {
@@ -60,15 +59,10 @@ class App extends Component {
     onPageNotFound: PropTypes.func.isRequired,
   };
   static componentDidConnect() {
-    console.log("fetching by id");
-    MarkdownStore.fetchById();
+    
   };
 
-  constructor() {
-    super();
-    //this.state = _getStateFromStores();
-    //this._onChange = this._onChange.bind(this);
-  }
+  
 
   getChildContext() {
     const context = this.props.context;
@@ -84,14 +78,9 @@ class App extends Component {
     this.removeCss = this.props.context.insertCss(s);
   }
 
-  componentDidMount(){
-    //console.log("fetching by id!!");
-    //MarkdownStore.fetchById();
-    //ProductStore.listen(this._onChange);
-  }
+  
 
   componentWillUnmount() {
-    //ProductStore.unlisten(this._onChange);
     this.removeCss();
   }
 
@@ -102,19 +91,7 @@ class App extends Component {
   render() {
     return !this.props.error ? (
       <div>
-      <span>{this.props.user.user}</span>
-      <span>{this.props.markdown.markdown}</span>
-      <button className="uk-button uk-button-small uk-button-primary"
-          onClick={this.changeProducts}>clickme
-        </button>
-        <ul>
-          {
-            this.props.product.products.map(p=><li key = {p}>
-                {p}
-              </li>)
-          }
-        </ul>
-        <Header />
+        <Header {...this.props}/>
         {this.props.children}
         <Feedback />
         <Footer />

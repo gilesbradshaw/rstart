@@ -31,9 +31,11 @@ import partials from 'express-partials';
 
 import secrets from '../secrets';
 
+
+import fetch from './core/fetch';
+
+
 const server = global.server = express();
-
-
 
 
 // Passport session setup.
@@ -134,6 +136,10 @@ server.use('/api/markdown', require('./api/markdown'));
 //
 // Register server-side rendering middleware
 // -----------------------------------------------------------------------------
+
+server.get('/', function(req, res) {   
+    res.redirect('/markdown');
+});
 server.get('*', async (req, res, next) => {
   try {
     let statusCode = 200;
@@ -150,17 +156,22 @@ server.get('*', async (req, res, next) => {
       onPageNotFound: () => statusCode = 404,
       user: req.user,
     };
+    
 
-    const altData = { MarkdownStore: { markdown: 'booooo' }, UserStore: {user: req.user ? req.user.displayName : '?&&&&&&?'}, ProductStore: { products: [1, 2, 3] } };
+    //const response = await fetch(`/api/markdown?path=`);
+    //const content = await response.json();
+    const altData = { MarkdownStore: { pages:{} }, UserStore: {user: req.user ? req.user.displayName : '?&&&&&&?'}, ProductStore: { products: [1, 2, 3] } };
     alt.bootstrap(JSON.stringify(altData));
 
-    await Router.dispatch({ path: req.path, query: req.query, context }, (state, component) => {
-      data.body = iso.render(ReactDOM.renderToString(component), alt.flush());
-      data.css = css.join('');
-    });
+      await Router.dispatch({ path: req.path, query: req.query, context }, (state, component) => {
+        data.body = iso.render(ReactDOM.renderToString(component), alt.flush());
+        data.css = css.join('');
+      });
 
-    const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
-    res.status(statusCode).send(req.user + '<!doctype html>\n ' + html);
+      const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
+      res.status(statusCode).send( '<!doctype html>\n ' + html);
+   
+    
   } catch (err) {
     next(err);
   }

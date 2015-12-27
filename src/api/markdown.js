@@ -11,6 +11,8 @@ import fs from 'fs';
 import { join } from 'path';
 import { Router } from 'express';
 import Promise from 'bluebird';
+import secrets from '../../secrets';
+import fetch from '../core/fetch';
 
 // A folder with Jade/Markdown/HTML content pages
 const CONTENT_DIR = join(__dirname, './markdown');
@@ -51,6 +53,7 @@ router.get('/', async (req, res, next) => {
   try {
     const path = req.query.path;
     const names = path.split('/');
+
     if (!path || await dirExists(join(CONTENT_DIR, path))) {
       const dirName = join(CONTENT_DIR, path);
 
@@ -59,11 +62,15 @@ router.get('/', async (req, res, next) => {
       }
       const options = await dirs(path);    
       const fileName = join(dirName, '/readme.md');
+      const apiResult = await fetch('https://api.github.com/repos/gilesbradshaw/rstart/readme');
+      const apiResultContent = await apiResult.json();
+      console.log(JSON.stringify(apiResultContent));
+      const ct = new Buffer(apiResultContent.content, 'base64').toString('ascii');
       if (!(await fileExists(fileName))) {
         res.status(200).send({ options, 'content': null, name: names[names.length - 1], path });
       } else {
         const content = await readFile(fileName, { encoding: 'utf8' });
-        res.status(200).send({ options, content, name: names[names.length - 1], path });
+        res.status(200).send({ options, content: ct, name: names[names.length - 1], path });
       }
     } else {
       let fileName = join(CONTENT_DIR, (path === '/' ? '/readme' : path) + '.md');

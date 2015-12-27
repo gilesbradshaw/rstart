@@ -8,14 +8,12 @@ import { createStore, datasource } from 'alt-utils/lib/decorators';
 class MarkdownStore {
   constructor() {
     this.bindActions(MyActions);
-    this.state = {
-      markdown: 'blahhhhhh',
-    };
-
+    
+    
   } 
-  onFetched(ummm){
-    console.log("FETCHEDDDDD");
-    this.setState(ummm);
+  onFetched(state){
+    this.pages[state.path] = state;
+    
   }
   
 }

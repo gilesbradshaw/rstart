@@ -23,6 +23,7 @@ function localUrl(url) {
 }
 
 function localFetch(url, options) {
+  console.log(`serve fetch ${localUrl(url)}`)
   return fetch(localUrl(url), options);
 }
 

@@ -1,25 +1,26 @@
 import alt from '../alt';
 
 import markdownActions from '../actions/MarkdownActions';
+import fetch from '../core/fetch';
+let data = {};
 
 const MarkdownSource = {
-  fetchById: { 
+  fetchById: {
     local(state, id) {
-      return undefined; // will return `undefined` if there
+      return data[id]; // will return `undefined` if there
                              // is no todo at that id
     },
     // `remote` is called if the return value of local == undefined
     // It will receive the same parameters as local would but should
     // return a promise.
     remote(state, id) {
-      return new Promise((resolve, reject) => setTimeout(() => { 
-        resolve({ markdown: 'hahhh' });
-        console.log("resolving...");
-      }, 4000 ));
-    },
-    shouldFetch(state, args){
-      console.log('shopuld');
-      return true;
+      return new Promise(async (resolve, reject) => {
+
+        const response = await fetch(`/api/markdown?path=` + id);
+        const content = await response.json();
+        data[id] = { path:content.path , markdown: content.content, options: content.options };
+        resolve(data[id]); 
+      });
     },
 
     // loading specifies an optional action to fire once `remote`

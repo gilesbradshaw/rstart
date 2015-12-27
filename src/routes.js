@@ -31,14 +31,18 @@ const router = new Router(on => {
 
   on('/register', async () => <RegisterPage />);
   on('/markdown', async () => {
-    const response = await fetch(`/api/markdown?path=`);
-    const content = await response.json();
-    return response && <MarkdownPage {...content} />;
+    const content = {
+      path: ""    
+    };
+    return  <MarkdownPage {...content} />;
   });
   on('/markdown/*', async (state) => {
-    const response = await fetch(`/api/markdown?path=${state.path.slice(10)}`);
-    const content = await response.json();
-    return response && <MarkdownPage {...content} />;
+    // const response = await fetch(`/api/markdown?path=${state.path.slice(10)}`);
+    // const content = await response.json();
+    const content = {
+      path: decodeURIComponent(state.path.slice(10)),
+    };
+    return  <MarkdownPage {...content} />;
   });
 
   on('*', async (state) => {
