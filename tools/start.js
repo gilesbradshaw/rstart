@@ -22,6 +22,7 @@ import copy from './copy';
  * synchronizing URLs, interactions and code changes across multiple devices.
  */
 async function start() {
+  console.log("running start..");
   await run(clean);
   await run(copy.bind(undefined, { watch: true }));
   await new Promise(resolve => {

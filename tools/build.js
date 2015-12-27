@@ -17,6 +17,7 @@ import bundle from './bundle';
  * format and copies it to the output (build) folder.
  */
 async function build() {
+  console.log("running build ....");
   await run(clean);
   await run(copy);
   await run(bundle);
